@@ -1,0 +1,712 @@
+```css
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Noto Sans JP", sans-serif;
+    color: #333;
+    background: #fff;
+    line-height: 1.8;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+
+/* =========================
+   Common
+========================= */
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.section {
+    padding: 90px 0;
+}
+
+.section-label {
+    margin-bottom: 10px;
+    color: #777;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+}
+
+.section-heading {
+    margin-bottom: 45px;
+}
+
+.section-heading h2 {
+    margin-bottom: 15px;
+    font-size: 38px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.section-heading p {
+    color: #777;
+}
+
+
+/* =========================
+   Header
+========================= */
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    background: rgba(255,255,255,0.97);
+    border-bottom: 1px solid #eee;
+}
+
+.header-inner {
+    width: 90%;
+    max-width: 1100px;
+    min-height: 75px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-weight: 700;
+}
+
+.logo-mark {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+    background: #596b55;
+
+    font-size: 19px;
+}
+
+.logo small {
+    display: block;
+
+    margin-top: 1px;
+
+    color: #888;
+
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+
+    font-size: 13px;
+}
+
+.nav a {
+    transition: 0.2s;
+}
+
+.nav a:hover {
+    color: #596b55;
+}
+
+.nav-contact {
+    padding: 10px 18px;
+
+    color: #fff !important;
+    background: #596b55;
+}
+
+
+/* =========================
+   Hero
+========================= */
+
+.hero {
+    position: relative;
+    min-height: 620px;
+
+    display: flex;
+    align-items: center;
+
+    overflow: hidden;
+
+    background: #777;
+}
+
+.hero-image {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 100%;
+
+    /*
+       画像を極端に拡大しない
+    */
+    object-fit: cover;
+    object-position: center;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,0.58),
+            rgba(0,0,0,0.12)
+        );
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+
+    color: #fff;
+}
+
+.hero-label {
+    margin-bottom: 18px;
+
+    font-size: 12px;
+    letter-spacing: 0.18em;
+}
+
+.hero h1 {
+    margin-bottom: 25px;
+
+    font-size: clamp(42px, 6vw, 68px);
+    font-weight: 500;
+
+    line-height: 1.35;
+}
+
+.hero-text {
+    margin-bottom: 35px;
+    font-size: 17px;
+}
+
+.hero-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 25px;
+
+    padding: 14px 23px;
+
+    color: #333;
+    background: #fff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    transition: 0.25s;
+}
+
+.hero-button:hover {
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   Concept
+========================= */
+
+.concept {
+    background: #fff;
+}
+
+.concept-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 70px;
+}
+
+.concept-text {
+    color: #555;
+}
+
+.concept-text p {
+    margin-bottom: 18px;
+}
+
+.text-link {
+    display: inline-block;
+
+    margin-top: 15px;
+
+    color: #596b55;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    border-bottom: 1px solid #596b55;
+}
+
+.concept-points {
+    border-top: 1px solid #ddd;
+}
+
+.point {
+    display: grid;
+    grid-template-columns: 45px 1fr;
+    gap: 15px;
+
+    padding: 22px 0;
+
+    border-bottom: 1px solid #ddd;
+}
+
+.point > span {
+    color: #8b806e;
+    font-family: Georgia, serif;
+}
+
+.point h3 {
+    margin-bottom: 5px;
+    font-size: 17px;
+}
+
+.point p {
+    color: #777;
+    font-size: 13px;
+}
+
+
+/* =========================
+   Works
+========================= */
+
+.works {
+    background: #f7f7f5;
+}
+
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.work {
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+.work-image {
+    width: 100%;
+    height: 300px;
+
+    background: #eee;
+
+    /*
+       画像全体を表示
+    */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.work-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+    background: #eee;
+}
+
+.work-info {
+    padding: 22px 25px 25px;
+}
+
+.work-info > p {
+    margin-bottom: 5px;
+
+    color: #8b806e;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.work-info h3 {
+    margin-bottom: 6px;
+
+    font-size: 19px;
+    font-weight: 500;
+}
+
+.work-area {
+    color: #888;
+    font-size: 12px;
+}
+
+
+/* =========================
+   Service
+========================= */
+
+.service {
+    background: #fff;
+}
+
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.service-card {
+    padding: 32px 27px;
+
+    background: #f7f7f5;
+    border-top: 3px solid #596b55;
+}
+
+.service-card > span {
+    color: #8b806e;
+
+    font-family: Georgia, serif;
+    font-size: 17px;
+}
+
+.service-card h3 {
+    margin: 15px 0 12px;
+    font-size: 19px;
+}
+
+.service-card p {
+    margin-bottom: 20px;
+
+    color: #666;
+
+    font-size: 13px;
+}
+
+.service-card a {
+    color: #596b55;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/* =========================
+   About
+========================= */
+
+.about {
+    background: #596b55;
+    color: #fff;
+}
+
+.about .section-label {
+    color: #dfe4dc;
+}
+
+.about-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+}
+
+.about h2 {
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.about-text {
+    padding-top: 10px;
+    color: #edf1eb;
+}
+
+.about-text p {
+    margin-bottom: 18px;
+}
+
+.about .text-link {
+    color: #fff;
+    border-color: #fff;
+}
+
+
+/* =========================
+   Company
+========================= */
+
+.company {
+    background: #f7f7f5;
+}
+
+.company-table {
+    max-width: 850px;
+    border-top: 1px solid #ddd;
+}
+
+.company-table > div {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+
+    padding: 18px 0;
+
+    border-bottom: 1px solid #ddd;
+}
+
+.company-table span {
+    color: #777;
+    font-size: 13px;
+}
+
+.company-table strong {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* =========================
+   Contact
+========================= */
+
+.contact {
+    text-align: center;
+
+    background: #3f463e;
+    color: #fff;
+}
+
+.contact .section-label {
+    color: #d8d2c7;
+}
+
+.contact h2 {
+    margin-bottom: 20px;
+
+    font-size: 42px;
+    font-weight: 400;
+
+    line-height: 1.5;
+}
+
+.contact-text {
+    margin-bottom: 35px;
+
+    color: #d8ddd6;
+
+    font-size: 14px;
+}
+
+.contact-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.contact-tel,
+.contact-mail {
+    min-width: 260px;
+
+    padding: 16px 22px;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.contact-tel {
+    background: #fff;
+    color: #333;
+}
+
+.contact-mail {
+    background: #756b5b;
+    color: #fff;
+}
+
+.contact-tel small {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #777;
+
+    font-size: 10px;
+    font-weight: 400;
+}
+
+.sample-notice {
+    max-width: 650px;
+
+    margin: 40px auto 0;
+
+    color: #b9beb8;
+
+    font-size: 10px;
+}
+
+
+/* =========================
+   Footer
+========================= */
+
+.footer {
+    padding: 40px 0 20px;
+
+    background: #292c28;
+    color: #fff;
+}
+
+.footer-logo {
+    margin-bottom: 5px;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.footer p {
+    margin-bottom: 30px;
+
+    color: #aaa;
+    font-size: 12px;
+}
+
+.footer-bottom {
+    padding-top: 18px;
+
+    display: flex;
+    justify-content: space-between;
+
+    border-top: 1px solid #444;
+
+    color: #888;
+    font-size: 10px;
+}
+
+.footer-bottom a {
+    color: #bbb;
+}
+
+
+/* =========================
+   Tablet
+========================= */
+
+@media (max-width: 850px) {
+
+    .nav {
+        display: none;
+    }
+
+    .section {
+        padding: 75px 0;
+    }
+
+    .concept-content,
+    .about-inner {
+        grid-template-columns: 1fr;
+        gap: 45px;
+    }
+
+    .service-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .works-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .contact-tel,
+    .contact-mail {
+        width: 100%;
+        max-width: 400px;
+    }
+}
+
+
+/* =========================
+   Smartphone
+========================= */
+
+@media (max-width: 500px) {
+
+    .container,
+    .hero-content,
+    .header-inner {
+        width: 88%;
+    }
+
+    .hero {
+        min-height: 580px;
+    }
+
+    .hero h1 {
+        font-size: 40px;
+    }
+
+    .hero-text {
+        font-size: 14px;
+    }
+
+    .section-heading h2 {
+        font-size: 32px;
+    }
+
+    .work-image {
+        height: 240px;
+    }
+
+    .company-table > div {
+        grid-template-columns: 105px 1fr;
+    }
+
+    .contact h2 {
+        font-size: 32px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+```
