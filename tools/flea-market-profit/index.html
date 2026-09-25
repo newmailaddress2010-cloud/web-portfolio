@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>フリマ利益計算機｜手数料・送料・仕入れを引いて計算</title>
+<meta name="description" content="フリマアプリの販売価格から販売手数料、送料、梱包費、仕入れ価格を引いて利益を計算します。">
+<style>
+body{font-family:Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;background:#f6f7f9;margin:0;color:#333}
+.container{max-width:650px;margin:40px auto;padding:24px}
+.card{background:#fff;border-radius:14px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+h1{font-size:27px;margin-top:0}
+label{display:block;font-weight:bold;margin:14px 0 6px}
+input,select,button{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+button{background:#333;color:#fff;border:0;margin-top:18px;cursor:pointer}
+.result{margin-top:20px;padding:18px;background:#f1f3f5;border-radius:10px;line-height:2}
+.big{font-size:26px;font-weight:bold}
+.note{font-size:13px;color:#666;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="container"><div class="card">
+<h1>フリマ利益計算機</h1>
+<p>売れた価格から手数料・送料・梱包費・仕入れ価格を引いて、実際の利益を計算します。</p>
+<label>販売価格（円）</label><input id="price" type="number" min="0" placeholder="例：5000">
+<label>販売手数料（%）</label><input id="fee" type="number" min="0" value="10" step="0.1">
+<label>送料（円）</label><input id="shipping" type="number" min="0" value="0">
+<label>梱包費（円）</label><input id="packing" type="number" min="0" value="0">
+<label>仕入れ価格（円）</label><input id="cost" type="number" min="0" value="0">
+<button onclick="calc()">利益を計算</button>
+<div id="result" class="result">入力して「利益を計算」を押してください。</div>
+<p class="note">販売手数料は利用するサービスによって異なります。最初から固定せず、入力欄で変更できるようにしています。</p>
+</div></div>
+<script>
+function calc(){
+ const p=Number(document.getElementById("price").value),f=Number(document.getElementById("fee").value),s=Number(document.getElementById("shipping").value),b=Number(document.getElementById("packing").value),c=Number(document.getElementById("cost").value);
+ if(p<0||f<0||s<0||b<0||c<0||!p){document.getElementById("result").textContent="販売価格を入力してください";return}
+ const fee=p*f/100,profit=p-fee-s-b-c,rate=profit/p*100;
+ document.getElementById("result").innerHTML='販売手数料：'+Math.round(fee).toLocaleString()+'円<br>利益：<span class="big">'+Math.round(profit).toLocaleString()+'円</span><br>利益率：'+rate.toFixed(1)+'%';
+}
+</script>
+</body>
+</html>
