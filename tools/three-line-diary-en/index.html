@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>3-Line Diary for People Who Don't Know What to Write</title>
+<meta name="description" content="A simple three-line diary for people who don't know what to write. Answer three small questions and keep a record of your day.">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f7f6f2;color:#333;font-family:Arial,sans-serif}.wrap{max-width:720px;margin:0 auto;padding:30px 18px 50px}.card{background:#fff;border-radius:16px;padding:26px;box-shadow:0 3px 16px rgba(0,0,0,.07)}h1{font-size:26px;margin:0 0 8px}.lead{color:#666;line-height:1.7}.date{text-align:right;color:#777;font-size:14px;margin-bottom:20px}.q{margin-top:20px;font-weight:bold;font-size:18px}.hint{font-size:13px;color:#888;margin:5px 0 8px}textarea{width:100%;min-height:75px;resize:vertical;padding:11px;border:1px solid #d5d5d5;border-radius:9px;font-size:16px;line-height:1.6}button{width:100%;padding:13px;border:0;border-radius:9px;background:#333;color:#fff;font-size:16px;margin-top:20px;cursor:pointer}.saved{margin-top:18px;padding:14px;border-radius:9px;background:#f1f3f5;display:none}.calendar{margin-top:32px}.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.cal-head button{width:auto;margin:0;padding:8px 14px}.month{font-weight:bold;font-size:18px}.week,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.week div{text-align:center;font-size:12px;color:#777;padding:5px}.day{min-height:44px;border:1px solid #e2e2e2;border-radius:7px;background:#fff;text-align:center;padding:7px 2px;cursor:pointer}.day.has{font-weight:bold;color:#1976d2;background:#eef5ff;border-color:#b8d4f5}.day.selected{outline:2px solid #555}.day.empty{background:transparent;border:0;cursor:default}.history{margin-top:24px}.entry{border-top:1px solid #ddd;padding:15px 0}.entry strong{display:block;margin-bottom:7px}.entry p{margin:5px 0;line-height:1.6}.emptymsg{color:#888;font-size:14px}
+</style>
+</head>
+<body><div class="wrap"><div class="card">
+<h1>3-Line Diary for People Who Don't Know What to Write</h1>
+<p class="lead">Don't know what to write in your diary?<br>Just answer three simple questions. Small things are enough.</p>
+<div class="date" id="today"></div>
+<div class="q">1. What made you feel a little better today?</div><div class="hint">It can be something small, like a good meal or getting enough sleep.</div>
+<textarea id="a" placeholder="Example: The curry I had for lunch was really good."></textarea>
+<div class="q">2. What did you manage to do today?</div><div class="hint">Even “I got out of bed” counts.</div>
+<textarea id="b" placeholder="Example: I did the laundry."></textarea>
+<div class="q">3. What made you a little happy today?</div><div class="hint">It doesn't have to be a big event.</div>
+<textarea id="c" placeholder="Example: I found a video I really liked."></textarea>
+<button onclick="save()">Save today's diary</button><div class="saved" id="saved"></div>
+<div class="calendar"><h2>Past entries</h2><div class="cal-head"><button onclick="moveMonth(-1)">‹ Previous</button><div class="month" id="month"></div><button onclick="moveMonth(1)">Next ›</button></div><div class="week"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div class="days" id="days"></div></div>
+<div class="history" id="history"><div class="emptymsg">Select a date on the calendar to see that day's entry.</div></div>
+</div></div>
+<script>
+const key="threeLineDiaryEntriesEN";let view=new Date(),selected="";
+function dateKey(y,m,d){return y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0")}
+function dateText(y,m,d){return new Date(y,m,d).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"})}
+function getEntries(){try{return JSON.parse(localStorage.getItem(key)||"[]")}catch(e){return[]}}
+function todayKey(){const d=new Date();return dateKey(d.getFullYear(),d.getMonth(),d.getDate())}
+const now=new Date();document.getElementById("today").textContent=dateText(now.getFullYear(),now.getMonth(),now.getDate());
+function save(){const values=["a","b","c"].map(id=>document.getElementById(id).value.trim());if(values.every(v=>!v)){alert("Please write at least one thing. Even a few words are enough.");return}let entries=getEntries(),k=todayKey();entries=entries.filter(x=>x.date!==k);entries.unshift({date:k,display:dateText(now.getFullYear(),now.getMonth(),now.getDate()),values});localStorage.setItem(key,JSON.stringify(entries));document.getElementById("saved").style.display="block";document.getElementById("saved").textContent="Saved.";selected=k;view=new Date();renderCalendar();showEntry(k)}
+function moveMonth(n){view.setMonth(view.getMonth()+n);renderCalendar()}
+function renderCalendar(){const y=view.getFullYear(),m=view.getMonth(),entries=getEntries(),has=new Set(entries.map(e=>e.date));document.getElementById("month").textContent=new Date(y,m,1).toLocaleDateString("en-US",{year:"numeric",month:"long"});const el=document.getElementById("days");el.innerHTML="";for(let i=0;i<new Date(y,m,1).getDay();i++)el.innerHTML+='<div class="day empty"></div>';for(let d=1;d<=new Date(y,m+1,0).getDate();d++){const k=dateKey(y,m,d),div=document.createElement("div");div.className="day"+(has.has(k)?" has":"")+(selected===k?" selected":"");div.textContent=d;div.onclick=()=>{selected=k;showEntry(k);renderCalendar()};el.appendChild(div)}}
+function showEntry(k){const e=getEntries().find(x=>x.date===k),el=document.getElementById("history");if(!e){el.innerHTML='<div class="emptymsg">There is no diary entry for '+k.replace(/-/g,"/")+'.</div>';return}el.innerHTML='<div class="entry"><strong>'+e.display+'</strong>'+e.values.map(v=>v?'<p>• '+v.replace(/</g,"&lt;").replace(/>/g,"&gt;")+'</p>':'').join("")+'</div>'}
+renderCalendar();
+</script></body></html>
