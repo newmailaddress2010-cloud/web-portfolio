@@ -6,44 +6,37 @@
 <title>締め日・支払日計算機｜翌月払いの日付を計算</title>
 <meta name="description" content="請求日から締め日と支払日を指定して、次回の支払予定日を計算する無料ツールです。">
 <style>
-body{font-family:Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;background:#f6f7f9;margin:0;color:#333}
-.container{max-width:620px;margin:40px auto;padding:24px}
-.card{background:#fff;border-radius:14px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-h1{font-size:27px;margin-top:0}
-label{display:block;font-weight:bold;margin:14px 0 6px}
-input,select,button{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
-button{background:#333;color:#fff;border:0;margin-top:18px;cursor:pointer}
-.result{margin-top:20px;padding:18px;background:#f1f3f5;border-radius:10px;text-align:center;font-size:23px;font-weight:bold}
-.note{font-size:13px;color:#666;line-height:1.7}
+body{font-family:Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;background:#f6f7f9;margin:0;color:#333}.container{max-width:620px;margin:40px auto;padding:24px}.card{background:#fff;border-radius:14px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.08)}h1{font-size:27px;margin-top:0}label{display:block;font-weight:bold;margin:14px 0 6px}input,select,button{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}button{background:#333;color:#fff;border:0;margin-top:18px;cursor:pointer}.result{margin-top:20px;padding:18px;background:#f1f3f5;border-radius:10px;text-align:center;font-size:23px;font-weight:bold}.note{font-size:13px;color:#666;line-height:1.7}
 </style>
 </head>
 <body>
 <div class="container"><div class="card">
 <h1>締め日・支払日計算機</h1>
 <p>「月末締め・翌月25日払い」のような条件から、次の支払予定日を計算します。</p>
-<label>請求・取引の日付</label><input id="base" type="date">
-<label>締め日</label>
+<label for="base">請求・取引の日付（YYYYMMDD）</label>
+<input id="base" type="text" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" placeholder="例：20260925">
+<label for="close">締め日</label>
 <select id="close"><option value="0">月末</option><option value="5">5日</option><option value="10">10日</option><option value="15">15日</option><option value="20">20日</option><option value="25">25日</option></select>
-<label>支払月</label>
+<label for="payMonth">支払月</label>
 <select id="payMonth"><option value="1">翌月</option><option value="2">翌々月</option><option value="0">当月</option></select>
-<label>支払日</label>
+<label for="payDay">支払日</label>
 <select id="payDay"><option value="5">5日</option><option value="10">10日</option><option value="15">15日</option><option value="20">20日</option><option value="25" selected>25日</option><option value="27">27日</option><option value="31">月末</option></select>
 <button onclick="calc()">支払日を計算</button>
 <div id="result" class="result">—</div>
 <p class="note">これは日付の目安を計算するツールです。実際の契約では、金融機関休業日の扱いや「締め日当日を含むか」などの条件が異なる場合があります。</p>
 </div></div>
 <script>
+function parseDate(s){if(!/^\d{8}$/.test(s))return null;const y=Number(s.slice(0,4)),m=Number(s.slice(4,6)),d=Number(s.slice(6,8));const x=new Date(y,m-1,d);return x.getFullYear()===y&&x.getMonth()===m-1&&x.getDate()===d?x:null}
 function calc(){
- const v=document.getElementById("base").value;if(!v){document.getElementById("result").textContent="日付を入力してください";return}
- const [y,m,d]=v.split("-").map(Number),close=Number(document.getElementById("close").value),offset=Number(document.getElementById("payMonth").value),pd=Number(document.getElementById("payDay").value);
- let baseMonth=m;
+ const x=parseDate(document.getElementById("base").value.trim());
+ if(!x){document.getElementById("result").textContent="YYYYMMDDで正しく入力してください";return}
+ const y=x.getFullYear(),m=x.getMonth()+1,d=x.getDate(),close=Number(document.getElementById("close").value),offset=Number(document.getElementById("payMonth").value),pd=Number(document.getElementById("payDay").value);
  let targetYear=y,targetMonth=m;
- const afterClose=close===0 ? d<=new Date(y,m,0).getDate() : d<=close;
- if(!afterClose){targetMonth++}
+ const afterClose=close===0?d<=new Date(y,m,0).getDate():d<=close;
+ if(!afterClose)targetMonth++;
  targetMonth+=offset;
  targetYear+=Math.floor((targetMonth-1)/12);targetMonth=(targetMonth-1)%12+1;
- const last=new Date(targetYear,targetMonth,0).getDate();
- const day=pd===31?last:Math.min(pd,last);
+ const last=new Date(targetYear,targetMonth,0).getDate(),day=pd===31?last:Math.min(pd,last);
  document.getElementById("result").textContent=targetYear+"年"+targetMonth+"月"+day+"日";
 }
 </script>
