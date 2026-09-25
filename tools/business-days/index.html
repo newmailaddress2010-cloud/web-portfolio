@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>営業日計算機｜土日祝を除いて日数を計算</title>
+<meta name="description" content="開始日と終了日の間の営業日数、指定した営業日後の日付を無料で計算できます。土日祝に対応。">
+<style>
+body{font-family:Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;background:#f6f7f9;margin:0;color:#333}
+.container{max-width:700px;margin:40px auto;padding:24px}
+.card{background:#fff;border-radius:14px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:20px}
+h1{font-size:28px;margin-top:0} h2{font-size:20px}
+label{display:block;font-weight:bold;margin:14px 0 6px}
+input,button,textarea{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+button{background:#333;color:#fff;border:0;cursor:pointer;margin-top:16px}
+.result{font-size:22px;font-weight:bold;text-align:center;padding:18px;background:#f1f3f5;border-radius:10px;margin-top:18px}
+.note{font-size:13px;color:#666;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="card">
+<h1>営業日計算機</h1>
+<p>土日祝を除いた営業日数や、○営業日後の日付を計算できます。</p>
+
+<h2>① 期間内の営業日数</h2>
+<label for="start">開始日</label>
+<input id="start" type="date">
+<label for="end">終了日</label>
+<input id="end" type="date">
+<button onclick="countBusinessDays()">営業日数を計算</button>
+<div id="countResult" class="result">—</div>
+
+<h2>② ○営業日後の日付</h2>
+<label for="base">基準日</label>
+<input id="base" type="date">
+<label for="days">営業日数</label>
+<input id="days" type="number" min="0" value="5">
+<button onclick="addBusinessDays()">日付を計算</button>
+<div id="dateResult" class="result">—</div>
+
+<p class="note">土曜・日曜と、2026年・2027年の日本の祝日・休日を除外します。会社独自の休業日は含まれません。</p>
+</div>
+</div>
+<script>
+const holidays = new Set([
+"2026-01-01","2026-01-12","2026-02-11","2026-02-23","2026-03-20","2026-04-29","2026-05-03","2026-05-04","2026-05-05","2026-05-06","2026-07-20","2026-08-11","2026-09-21","2026-09-22","2026-09-23","2026-10-12","2026-11-03","2026-11-23",
+"2027-01-01","2027-01-11","2027-02-11","2027-02-23","2027-03-21","2027-03-22","2027-04-29","2027-05-03","2027-05-04","2027-05-05","2027-07-19","2027-08-11","2027-09-20","2027-09-23","2027-10-11","2027-11-03","2027-11-23"
+]);
+function localDate(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+function key(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function business(d){return d.getDay()!==0&&d.getDay()!==6&&!holidays.has(key(d))}
+function countBusinessDays(){
+ const a=document.getElementById("start").value,b=document.getElementById("end").value;
+ if(!a||!b){document.getElementById("countResult").textContent="日付を入力してください";return}
+ let s=localDate(a),e=localDate(b),sign=1;if(s>e){[s,e]=[e,s];sign=-1}
+ let n=0;for(let d=new Date(s);d<=e;d.setDate(d.getDate()+1))if(business(d))n++;
+ document.getElementById("countResult").textContent=(n*sign)+"営業日";
+}
+function addBusinessDays(){
+ const v=document.getElementById("base").value,n=Number(document.getElementById("days").value);
+ if(!v||n<0){document.getElementById("dateResult").textContent="基準日と営業日数を入力してください";return}
+ let d=localDate(v),count=0;
+ while(count<n){d.setDate(d.getDate()+1);if(business(d))count++}
+ document.getElementById("dateResult").textContent=d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日";
+}
+</script>
+</body>
+</html>
