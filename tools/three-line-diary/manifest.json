@@ -1,0 +1,9 @@
+{
+  "name":"書けない人の3行日記",
+  "short_name":"3行日記",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f7f6f2",
+  "theme_color":"#333333",
+  "lang":"ja"
+}
