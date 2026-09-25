@@ -2,6 +2,32 @@
 <html lang="ja">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>年齢計算機</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans JP",sans-serif;background:#f5f5f5;color:#333}.box{max-width:520px;margin:50px auto;padding:28px;background:#fff;border-radius:14px;box-shadow:0 4px 18px #0001}h1{text-align:center;font-size:28px}label{display:block;margin:18px 0 8px;font-weight:bold}input,button{width:100%;padding:13px;font-size:16px;border:1px solid #ccc;border-radius:8px}button{margin-top:24px;background:#333;color:#fff;border:0;cursor:pointer}.result{margin-top:24px;padding:20px;background:#f7f7f7;border-radius:10px;text-align:center}.age{font-size:30px;font-weight:bold}
-</style></head><body><div class="box"><h1>年齢計算機</h1><label>生年月日</label><input id="birthday" type="date"><button onclick="calc()">年齢を計算</button><div class="result"><div class="age" id="age">---</div><p id="detail">生年月日を入力してください。</p></div></div>
-<script>function calc(){const v=document.getElementById("birthday").value;if(!v){alert("生年月日を入力してください。");return}const b=new Date(v+"T00:00:00"),t=new Date();let a=t.getFullYear()-b.getFullYear();const d=new Date(t.getFullYear(),b.getMonth(),b.getDate());if(t<d)a--;document.getElementById("age").textContent=a+"歳";document.getElementById("detail").textContent=b.getFullYear()+"年"+(b.getMonth()+1)+"月"+b.getDate()+"日生まれ"}</script></body></html>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans JP",sans-serif;background:#f5f5f5;color:#333}.box{max-width:520px;margin:50px auto;padding:28px;background:#fff;border-radius:14px;box-shadow:0 4px 18px #0001}h1{text-align:center;font-size:28px}label{display:block;margin:18px 0 8px;font-weight:bold}input,button{width:100%;padding:13px;font-size:16px;border:1px solid #ccc;border-radius:8px}button{margin-top:24px;background:#333;color:#fff;border:0;cursor:pointer}.hint{font-size:13px;color:#666;margin-top:7px}.result{margin-top:24px;padding:20px;background:#f7f7f7;border-radius:10px;text-align:center}.age{font-size:30px;font-weight:bold}
+</style></head><body><div class="box"><h1>年齢計算機</h1><label>生年月日</label><input id="birthday" type="text" inputmode="numeric" maxlength="8" placeholder="例：19770402 / 197742"><div class="hint">「YYYYMMDD」または「YYYYMDD」で入力できます。</div><button onclick="calc()">年齢を計算</button><div class="result"><div class="age" id="age">---</div><p id="detail">生年月日を入力してください。</p></div></div>
+<script>
+function parseBirthday(v){
+  v=v.replace(/[^0-9]/g,"");
+  let y,m,d;
+  if(v.length===8){
+    y=Number(v.slice(0,4));m=Number(v.slice(4,6));d=Number(v.slice(6,8));
+  }else if(v.length===7){
+    y=Number(v.slice(0,4));m=Number(v.slice(4,5));d=Number(v.slice(5,7));
+  }else if(v.length===6){
+    y=Number(v.slice(0,4));m=Number(v.slice(4,5));d=Number(v.slice(5,6));
+  }else{return null}
+  const b=new Date(y,m-1,d);
+  if(y<1||m<1||m>12||d<1||b.getFullYear()!==y||b.getMonth()!==m-1||b.getDate()!==d)return null;
+  return b;
+}
+function calc(){
+  const v=document.getElementById("birthday").value;
+  const b=parseBirthday(v);
+  if(!b){alert("生年月日を正しく入力してください。\n例：19770402 または 197742");return}
+  const t=new Date();
+  let a=t.getFullYear()-b.getFullYear();
+  const d=new Date(t.getFullYear(),b.getMonth(),b.getDate());
+  if(t<d)a--;
+  document.getElementById("age").textContent=a+"歳";
+  document.getElementById("detail").textContent=b.getFullYear()+"年"+(b.getMonth()+1)+"月"+b.getDate()+"日生まれ";
+}
+</script></body></html>
