@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>締切まであと何日？</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#333}
+.container{max-width:500px;margin:70px auto;padding:20px}.box{background:white;padding:30px;border-radius:12px}
+h1{text-align:center;margin-bottom:30px}label{display:block;margin-bottom:8px;font-weight:bold}
+input{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:6px}
+button{width:100%;margin-top:20px;padding:14px;font-size:16px;border:0;border-radius:6px;background:#333;color:white;cursor:pointer}
+.result{text-align:center;margin-top:30px;font-size:20px}.days{font-size:48px;font-weight:bold;margin:10px 0}
+</style>
+</head>
+<body>
+<div class="container"><div class="box">
+<h1>締切まであと何日？</h1>
+<label for="deadline">締切日</label>
+<input type="date" id="deadline">
+<button onclick="calculate()">計算する</button>
+<div class="result" id="result"></div>
+</div></div>
+<script>
+function calculate(){
+const input=document.getElementById("deadline").value,result=document.getElementById("result");
+if(!input){result.textContent="締切日を入力してください。";return;}
+const today=new Date();today.setHours(0,0,0,0);
+const deadline=new Date(input+"T00:00:00");
+const days=Math.ceil((deadline-today)/(1000*60*60*24));
+if(days>0)result.innerHTML='<div class="days">'+days+'</div>日後が締切です。';
+else if(days===0)result.innerHTML='<div class="days">今日</div>が締切です。';
+else result.innerHTML='<div class="days">'+Math.abs(days)+'</div>日前に締切を過ぎています。';
+}
+</script>
+</body>
+</html>
