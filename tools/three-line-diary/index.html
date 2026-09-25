@@ -1,60 +1,38 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>書けない人の3行日記｜今日の小さなことを3つ</title>
 <meta name="description" content="何を書けばいいかわからない人向けの3行日記。質問に答えるだけで、今日の小さなことを3つ記録できます。">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f7f6f2;color:#333;font-family:Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif}.wrap{max-width:720px;margin:0 auto;padding:30px 18px 50px}.card{background:#fff;border-radius:16px;padding:26px;box-shadow:0 3px 16px rgba(0,0,0,.07)}h1{font-size:26px;margin:0 0 8px}.lead{color:#666;line-height:1.7}.date{text-align:right;color:#777;font-size:14px;margin-bottom:20px}.q{margin-top:20px;font-weight:bold;font-size:18px}.hint{font-size:13px;color:#888;margin:5px 0 8px}textarea{width:100%;min-height:75px;resize:vertical;padding:11px;border:1px solid #d5d5d5;border-radius:9px;font-size:16px;line-height:1.6}button{width:100%;padding:13px;border:0;border-radius:9px;background:#333;color:#fff;font-size:16px;margin-top:20px;cursor:pointer}.saved{margin-top:18px;padding:14px;border-radius:9px;background:#f1f3f5;display:none}.history{margin-top:28px}.entry{border-top:1px solid #ddd;padding:15px 0}.entry strong{display:block;margin-bottom:7px}.entry p{margin:5px 0;line-height:1.6}.empty{color:#888;font-size:14px}
+*{box-sizing:border-box}body{margin:0;background:#f7f6f2;color:#333;font-family:Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif}.wrap{max-width:720px;margin:0 auto;padding:30px 18px 50px}.card{background:#fff;border-radius:16px;padding:26px;box-shadow:0 3px 16px rgba(0,0,0,.07)}h1{font-size:26px;margin:0 0 8px}.lead{color:#666;line-height:1.7}.date{text-align:right;color:#777;font-size:14px;margin-bottom:20px}.q{margin-top:20px;font-weight:bold;font-size:18px}.hint{font-size:13px;color:#888;margin:5px 0 8px}textarea{width:100%;min-height:75px;resize:vertical;padding:11px;border:1px solid #d5d5d5;border-radius:9px;font-size:16px;line-height:1.6}button{width:100%;padding:13px;border:0;border-radius:9px;background:#333;color:#fff;font-size:16px;margin-top:20px;cursor:pointer}.saved{margin-top:18px;padding:14px;border-radius:9px;background:#f1f3f5;display:none}.calendar{margin-top:32px}.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.cal-head button{width:auto;margin:0;padding:8px 14px}.month{font-weight:bold;font-size:18px}.week,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.week div{text-align:center;font-size:12px;color:#777;padding:5px}.day{min-height:44px;border:1px solid #e2e2e2;border-radius:7px;background:#fff;text-align:center;padding:7px 2px;cursor:pointer}.day.has{font-weight:bold}.day.selected{outline:2px solid #555}.day.empty{background:transparent;border:0;cursor:default}.history{margin-top:24px}.entry{border-top:1px solid #ddd;padding:15px 0}.entry strong{display:block;margin-bottom:7px}.entry p{margin:5px 0;line-height:1.6}.emptymsg{color:#888;font-size:14px}
 </style>
 </head>
-<body>
-<div class="wrap"><div class="card">
+<body><div class="wrap"><div class="card">
 <h1>書けない人の3行日記</h1>
 <p class="lead">「今日、良かったことを3つ」と言われても思いつかない。<br>そんなときは、質問に答えるだけで大丈夫です。</p>
 <div class="date" id="today"></div>
-
-<div class="q">① 今日、ちょっと楽だったことは？</div>
-<div class="hint">大きな出来事でなくてOK。ご飯がおいしかった、よく眠れた、など。</div>
+<div class="q">① 今日、ちょっと楽だったことは？</div><div class="hint">大きな出来事でなくてOK。</div>
 <textarea id="a" placeholder="例：昼に食べたカレーがおいしかった"></textarea>
-
-<div class="q">② 今日、できたことは？</div>
-<div class="hint">「起きた」「メールを返した」くらいでもOKです。</div>
+<div class="q">② 今日、できたことは？</div><div class="hint">「起きた」「メールを返した」くらいでもOKです。</div>
 <textarea id="b" placeholder="例：洗濯をした"></textarea>
-
-<div class="q">③ 今日、ちょっと嬉しかったことは？</div>
-<div class="hint">小さなことで十分です。</div>
+<div class="q">③ 今日、ちょっと嬉しかったことは？</div><div class="hint">小さなことで十分です。</div>
 <textarea id="c" placeholder="例：好きな動画を見つけた"></textarea>
+<button onclick="save()">今日の日記を保存する</button><div class="saved" id="saved"></div>
 
-<button onclick="save()">今日の日記を保存する</button>
-<div class="saved" id="saved"></div>
-<div class="history"><h2>過去の日記</h2><div id="history" class="empty">まだ日記はありません。</div></div>
+<div class="calendar"><h2>過去の日記</h2><div class="cal-head"><button onclick="moveMonth(-1)">‹ 前月</button><div class="month" id="month"></div><button onclick="moveMonth(1)">翌月 ›</button></div><div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div><div class="days" id="days"></div></div>
+<div class="history" id="history"><div class="emptymsg">カレンダーの日付を選ぶと、その日の内容が表示されます。</div></div>
 </div></div>
 <script>
-const key="threeLineDiaryEntries";
-const prompts=["今日、ちょっと楽だったことは？","今日、できたことは？","今日、ちょっと嬉しかったことは？"];
-function dateText(d=new Date()){return d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日"}
-document.getElementById("today").textContent=dateText()+"の日記";
+const key="threeLineDiaryEntries";let view=new Date(),selected="";
+function dateKey(y,m,d){return y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0")}
+function dateText(y,m,d){return y+"年"+(m+1)+"月"+d+"日"}
 function getEntries(){try{return JSON.parse(localStorage.getItem(key)||"[]")}catch(e){return[]}}
-function save(){
- const values=["a","b","c"].map(id=>document.getElementById(id).value.trim());
- if(values.every(v=>!v)){alert("何か1つでも書いてみてください。短くて大丈夫です。");return}
- let entries=getEntries(), today=new Date().toISOString().slice(0,10);
- entries=entries.filter(x=>x.date!==today);
- entries.unshift({date:today,display:dateText(),values});
- localStorage.setItem(key,JSON.stringify(entries));
- document.getElementById("saved").style.display="block";
- document.getElementById("saved").textContent="保存しました。今日の日記はこのブラウザに保存されています。";
- render(); 
-}
-function render(){
- const el=document.getElementById("history"), entries=getEntries();
- if(!entries.length){el.className="empty";el.textContent="まだ日記はありません。";return}
- el.className="";
- el.innerHTML=entries.map(e=>'<div class="entry"><strong>'+e.display+'</strong>'+e.values.map((v,i)=>v?'<p>・'+v.replace(/</g,"&lt;").replace(/>/g,"&gt;")+'</p>':'').join("")+'</div>').join("");
-}
-render();
-</script>
-</body>
-</html>
+function todayKey(){const d=new Date();return dateKey(d.getFullYear(),d.getMonth(),d.getDate())}
+document.getElementById("today").textContent=dateText(new Date().getFullYear(),new Date().getMonth(),new Date().getDate())+"の日記";
+function save(){const values=["a","b","c"].map(id=>document.getElementById(id).value.trim());if(values.every(v=>!v)){alert("何か1つでも書いてみてください。短くて大丈夫です。");return}let entries=getEntries(),k=todayKey();entries=entries.filter(x=>x.date!==k);entries.unshift({date:k,display:dateText(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()),values});localStorage.setItem(key,JSON.stringify(entries));document.getElementById("saved").style.display="block";document.getElementById("saved").textContent="保存しました。";selected=k;renderCalendar();showEntry(k)}
+function moveMonth(n){view.setMonth(view.getMonth()+n);renderCalendar()}
+function renderCalendar(){const y=view.getFullYear(),m=view.getMonth(),entries=getEntries(),has=new Set(entries.map(e=>e.date));document.getElementById("month").textContent=y+"年"+(m+1)+"月";const el=document.getElementById("days");el.innerHTML="";for(let i=0;i<new Date(y,m,1).getDay();i++){el.innerHTML+='<div class="day empty"></div>'}for(let d=1;d<=new Date(y,m+1,0).getDate();d++){const k=dateKey(y,m,d);const div=document.createElement("div");div.className="day"+(has.has(k)?" has":"")+(selected===k?" selected":"");div.textContent=d;div.onclick=()=>{selected=k;showEntry(k);renderCalendar()};el.appendChild(div)}}
+function showEntry(k){const e=getEntries().find(x=>x.date===k),el=document.getElementById("history");if(!e){el.innerHTML='<div class="emptymsg">'+k.replace(/-/g,"/")+'の日記はありません。</div>';return}el.innerHTML='<div class="entry"><strong>'+e.display+'</strong>'+e.values.map(v=>v?'<p>・'+v.replace(/</g,"&lt;").replace(/>/g,"&gt;")+'</p>':'').join("")+'</div>'}
+renderCalendar();
+</script></body></html>
