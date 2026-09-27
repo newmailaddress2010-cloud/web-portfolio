@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>関数電卓</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#f5f7fa;font-family:system-ui,-apple-system,sans-serif;color:#222}.wrap{max-width:520px;margin:auto;padding:20px 14px 36px}h1{font-size:26px;margin:0 0 6px}.lead{color:#666;margin:0 0 16px}.card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 10px #0000000d}.display{width:100%;height:70px;text-align:right;font-size:28px;padding:10px;border:1px solid #ccd3dc;border-radius:9px;background:#fafafa}.mode{display:flex;gap:8px;margin:10px 0}.mode button{flex:1;padding:9px;border:1px solid #ccd3dc;border-radius:8px;background:#fff;cursor:pointer}.mode button.active{background:#333;color:#fff}.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.keys button{min-height:50px;border:1px solid #d5dbe2;border-radius:9px;background:#f7f8fa;font-size:16px;cursor:pointer}.keys button:active{transform:scale(.98)}.keys .op{background:#eee}.keys .eq{background:#333;color:#fff}.note{font-size:12px;color:#666;line-height:1.6;margin:14px 0 0}</style></head>
+<body><div class="wrap"><h1>関数電卓</h1><p class="lead">四則演算、べき乗、平方根、三角関数、対数を計算できます。</p><div class="card">
+<input id="display" class="display" value="" inputmode="none" aria-label="計算式">
+<div class="mode"><button id="deg" class="active" onclick="setMode('DEG')">DEG</button><button id="rad" onclick="setMode('RAD')">RAD</button></div>
+<div class="keys">
+<button onclick="clearAll()">AC</button><button onclick="back()">⌫</button><button onclick="add('(')">(</button><button onclick="add(')')">)</button>
+<button onclick="fn('sin')">sin</button><button onclick="fn('cos')">cos</button><button onclick="fn('tan')">tan</button><button onclick="add('^')">xʸ</button>
+<button onclick="fn('sqrt')">√</button><button onclick="fn('log')">log</button><button onclick="fn('ln')">ln</button><button onclick="add('π')">π</button>
+<button onclick="add('7')">7</button><button onclick="add('8')">8</button><button onclick="add('9')">9</button><button class="op" onclick="add('/')">÷</button>
+<button onclick="add('4')">4</button><button onclick="add('5')">5</button><button onclick="add('6')">6</button><button class="op" onclick="add('*')">×</button>
+<button onclick="add('1')">1</button><button onclick="add('2')">2</button><button onclick="add('3')">3</button><button class="op" onclick="add('-')">−</button>
+<button onclick="add('0')">0</button><button onclick="add('.')">.</button><button class="eq" onclick="calculate()">=</button><button class="op" onclick="add('+')">+</button>
+</div><p class="note">三角関数はDEG（度）とRAD（ラジアン）を切り替えられます。計算はブラウザ内で行います。</p></div></div>
+<script>
+const d=document.getElementById('display');let mode='DEG';
+function add(x){d.value+=x} function clearAll(){d.value=''} function back(){d.value=d.value.slice(0,-1)}
+function setMode(m){mode=m;document.getElementById('deg').classList.toggle('active',m==='DEG');document.getElementById('rad').classList.toggle('active',m==='RAD')}
+function fn(name){d.value+=name+'('}
+function calculate(){
+ let s=d.value.replaceAll('π','Math.PI').replaceAll('^','**').replace(/sqrt\(/g,'Math.sqrt(').replace(/log\(/g,'Math.log10(').replace(/ln\(/g,'Math.log(');
+ if(mode==='DEG'){s=s.replace(/sin\(([^()]*)\)/g,'Math.sin(($1)*Math.PI/180)').replace(/cos\(([^()]*)\)/g,'Math.cos(($1)*Math.PI/180)').replace(/tan\(([^()]*)\)/g,'Math.tan(($1)*Math.PI/180)')}else{s=s.replace(/sin\(/g,'Math.sin(').replace(/cos\(/g,'Math.cos(').replace(/tan\(/g,'Math.tan(')}
+ if(!/^[0-9+\-*/().\s*MathPI_0-9a-z]+$/.test(s)){d.value='Error';return}try{const v=Function('"use strict";return ('+s+')')();d.value=Number.isFinite(v)?String(Number(v.toFixed(12))):'Error'}catch(e){d.value='Error'}
+}
+document.addEventListener('keydown',e=>{if(/[0-9.+\-*/()]/.test(e.key)){add(e.key)}else if(e.key==='Enter')calculate();else if(e.key==='Backspace')back();else if(e.key==='Escape')clearAll()});
+</script></body></html>
