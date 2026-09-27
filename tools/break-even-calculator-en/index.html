@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="固定費と変動費、販売価格から損益分岐点を計算できる無料ツールです。">
+<title>Break-Even Point Calculator</title>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans JP",sans-serif;background:#f5f5f5;color:#333}.box{max-width:520px;margin:40px auto;padding:28px;background:#fff;border-radius:14px;box-shadow:0 4px 18px #0001}h1{text-align:center;font-size:28px;margin:0 0 8px}.lead{text-align:center;color:#666;margin:0 0 24px}label{display:block;margin:18px 0 8px;font-weight:bold}input,button{width:100%;padding:13px;font-size:16px;border:1px solid #ccc;border-radius:8px}button{margin-top:24px;background:#333;color:#fff;border:0;cursor:pointer}.result{margin-top:24px;padding:20px;background:#f7f7f7;border-radius:10px}.main{font-size:30px;font-weight:bold;text-align:center;margin:8px 0 18px}.row{display:flex;justify-content:space-between;gap:12px;margin:12px 0}.value{font-weight:bold}.note{font-size:13px;color:#666;line-height:1.6;margin-top:18px}@media(max-width:600px){.box{margin:16px;padding:22px}.main{font-size:27px}}</style></head>
+<body><div class="box"><h1>Break-Even Point Calculator</h1><p class="lead">Calculate the sales needed to avoid a loss</p>
+<label>Fixed costs (monthly)</label><input id="fixed" type="number" min="0" placeholder="例：300000">
+<label>Selling price per unit</label><input id="price" type="number" min="0" placeholder="例：1000">
+<label>Variable cost per unit</label><input id="variable" type="number" min="0" placeholder="例：400">
+<button onclick="calc()">Calculate</button>
+<div class="result"><div class="main" id="sales">---</div><div class="row"><span>Break-even units</span><span class="value" id="units">---</span></div><div class="row"><span>Contribution margin per unit</span><span class="value" id="contribution">---</span></div></div>
+<p class="note">Break-even sales = Fixed costs ÷ (1 − Variable cost ÷ Selling price).</p></div>
+<script>function fmt(n){return Math.ceil(n).toLocaleString()+""}function calc(){const f=Number(document.getElementById("fixed").value),p=Number(document.getElementById("price").value),v=Number(document.getElementById("variable").value);if(!Number.isFinite(f)||f<0||!Number.isFinite(p)||p<=0||!Number.isFinite(v)||v<0||v>=p){alert("Please enter valid numbers. Variable cost must be less than the selling price.");return}const c=p-v,u=f/c,s=u*p;document.getElementById("sales").textContent=fmt(s);document.getElementById("units").textContent=Math.ceil(u).toLocaleString()+" units";document.getElementById("contribution").textContent=Math.round(c).toLocaleString()+""}</script></body></html>
