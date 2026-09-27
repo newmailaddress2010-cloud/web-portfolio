@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSV重複行削除ツール</title>
+<meta name="description" content="CSVを貼り付けて、重複している行を削除できる無料ツールです。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+<h1>CSV重複行削除ツール</h1>
+<p class="lead">同じ内容の行をまとめて、重複を削除したCSVを作成します。</p>
+<section class="card">
+<label for="input">CSV</label>
+<textarea id="input" placeholder="名前,年齢,都道府県
+田中,35,東京都
+佐藤,28,神奈川県
+田中,35,東京都"></textarea>
+<div class="options">
+<label class="check"><input id="header" type="checkbox" checked> 1行目をヘッダーとして扱う</label>
+<label class="check"><input id="ignoreSpace" type="checkbox"> 前後の空白を無視して比較</label>
+</div>
+<button id="run">重複を削除</button>
+</section>
+<section class="card">
+<div class="result-head"><h2>結果</h2><button id="copy" class="small">コピー</button></div>
+<p id="stats" class="stats"></p>
+<textarea id="output" readonly placeholder="ここに結果が表示されます"></textarea>
+</section>
+<section class="card guide">
+<h2>使い方</h2>
+<p>CSVを貼り付け、「重複を削除」を押してください。完全に同じ内容の行は最初の1行を残して削除します。</p>
+<p>入力データはブラウザ内で処理され、サーバーへ送信しません。</p>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
