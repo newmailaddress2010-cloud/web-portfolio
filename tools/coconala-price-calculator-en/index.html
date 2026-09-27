@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#6f8278">
+<meta name="description" content="ココナラのSales Fee22%を考慮して、受け取りたい金額から販売価格を逆算する無料ツール。">
+<title>Coconala Net Income Calculator</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f1ea;color:#39413e;font-family:Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:18px 12px 42px}
+.card{background:#fffdf9;border-radius:22px;padding:22px 17px;box-shadow:0 5px 22px rgba(72,65,53,.08)}
+h1{font-size:25px;margin:0 0 10px;line-height:1.35}
+.lead{color:#68706d;line-height:1.75;font-size:14px;margin:0 0 22px}
+.field{margin-top:17px}
+label{display:block;font-weight:bold;font-size:14px;margin-bottom:7px}
+input,select{width:100%;min-height:48px;padding:10px 12px;border:1px solid #ddd9d0;border-radius:12px;background:#fff;font-size:16px;color:#39413e}
+input:focus,select:focus{outline:2px solid #d5e1da;border-color:#9daba6}
+button{width:100%;min-height:50px;border:0;border-radius:13px;background:#70867b;color:#fff;font-size:16px;margin-top:20px;cursor:pointer}
+.result{margin-top:22px;padding:17px;border-radius:16px;background:#f1f4ef;border:1px solid #dce6df}
+.result-title{font-size:13px;color:#68706d}
+.price{font-size:34px;font-weight:bold;color:#53695e;margin:5px 0 12px}
+.row{display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-top:1px solid #dce4de;font-size:14px}
+.row strong{white-space:nowrap}
+.note{margin-top:18px;padding:12px 13px;border-radius:12px;background:#f7f4ed;color:#737872;font-size:12px;line-height:1.7}
+.small{font-size:12px;color:#858b88;margin-top:6px;line-height:1.6}
+.copy{background:#eeeae3;color:#59615d;margin-top:10px}
+.lang{display:flex;justify-content:flex-end;margin-bottom:10px}
+.lang a{color:#65766c;text-decoration:none;font-size:13px}
+@media(min-width:600px){.wrap{padding:35px 18px 55px}.card{padding:30px}h1{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+
+<h1>Coconala Net Income Calculator</h1>
+<p class="lead">How much should you charge if you want to keep ¥3,000?<br>Enter the sales fee and calculate the required selling price.</p>
+
+<div class="field">
+<label for="net">Desired Net Amount (JPY)</label>
+<input id="net" type="number" min="1" step="1" value="3000">
+</div>
+
+<div class="field">
+<label for="fee">Sales Fee (%)</label>
+<input id="fee" type="number" min="0" max="99.99" step="0.1" value="22">
+<div class="small">For standard Coconala services, 22% of the sales amount is deducted.</div>
+</div>
+
+<div class="field">
+<label for="extra">Other Costs (JPY)</label>
+<input id="extra" type="number" min="0" step="1" value="0">
+<div class="small">Enter any additional costs such as materials.</div>
+</div>
+
+<button onclick="calculate()">販売価格をCalculate</button>
+
+<div class="result">
+<div class="result-title">Estimated Selling Price</div>
+<div class="price" id="price">¥3,847</div>
+<div class="row"><span>Desired Net Amount</span><strong id="netOut">¥3,000</strong></div>
+<div class="row"><span>Sales Fee</span><strong id="feeOut">¥847</strong></div>
+<div class="row"><span>Other Costs</span><strong id="extraOut">¥0</strong></div>
+<button class="copy" onclick="copyResult()">Copy Result</button>
+</div>
+
+<div class="note">This tool provides a simple estimate. Check Coconala for the latest fees and payout conditions for your service type.</div>
+</div>
+</div>
+<script>
+function yen(n){return "¥"+Math.round(n).toLocaleString("ja-JP")}
+function calculate(){
+ const net=Math.max(0,Number(document.getElementById("net").value)||0);
+ const fee=Math.min(99.99,Math.max(0,Number(document.getElementById("fee").value)||0));
+ const extra=Math.max(0,Number(document.getElementById("extra").value)||0);
+ const rate=1-fee/100;
+ const price=rate>0?(net+extra)/rate:0;
+ const feeAmount=price*fee/100;
+ document.getElementById("price").textContent=yen(price);
+ document.getElementById("netOut").textContent=yen(net);
+ document.getElementById("feeOut").textContent=yen(feeAmount);
+ document.getElementById("extraOut").textContent=yen(extra);
+ return {price,net,feeAmount,extra};
+}
+function copyResult(){
+ const r=calculate();
+ const text="Estimated Selling Price："+yen(r.price)+"
+Desired Net Amount："+yen(r.net)+"
+Sales Fee："+yen(r.feeAmount)+"
+Other Costs："+yen(r.extra);
+ navigator.clipboard?.writeText(text).then(()=>alert("Copy Resultしました。")).catch(()=>alert(text));
+}
+calculate();
+</script>
+</body>
+</html>
