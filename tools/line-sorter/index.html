@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章の行並べ替えツール</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>文章の行並べ替えツール</h1>
+    <p class="lead">1行ずつ並んだ文章やリストを、並べ替え・重複削除できます。</p>
+
+    <label for="inputText">文章・リスト</label>
+    <textarea id="inputText" placeholder="りんご
+バナナ
+りんご
+みかん"></textarea>
+
+    <div class="options">
+      <div>
+        <label for="sortMode">並べ替え</label>
+        <select id="sortMode">
+          <option value="none">並べ替えない</option>
+          <option value="asc">昇順（A→Z・あ→ん）</option>
+          <option value="desc">降順（Z→A・ん→あ）</option>
+          <option value="reverse">逆順</option>
+          <option value="shuffle">ランダム</option>
+        </select>
+      </div>
+      <label class="check"><input type="checkbox" id="dedupe"> 重複行を削除</label>
+      <label class="check"><input type="checkbox" id="removeBlank"> 空行を削除</label>
+    </div>
+
+    <button id="run">並べ替える</button>
+
+    <label for="outputText">結果</label>
+    <textarea id="outputText" readonly placeholder="ここに結果が表示されます"></textarea>
+
+    <div class="actions">
+      <button id="copy" class="secondary">結果をコピー</button>
+      <button id="clear" class="secondary">クリア</button>
+    </div>
+    <p id="status" class="status"></p>
+
+    <section class="guide">
+      <h2>使い方</h2>
+      <ol>
+        <li>文章やリストを1行ずつ入力します。</li>
+        <li>並べ替え方法を選びます。</li>
+        <li>必要なら「重複行を削除」「空行を削除」を選びます。</li>
+        <li>「並べ替える」を押します。</li>
+      </ol>
+      <p>入力した文章はこのページ内で処理され、サーバーへ送信されません。</p>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
