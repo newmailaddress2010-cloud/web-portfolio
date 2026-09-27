@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Start timeとEnd timeから経過 hours を計算できる無料ツールです。">
+<title>Elapsed Time Calculator</title>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans JP",sans-serif;background:#f5f5f5;color:#333}.box{max-width:520px;margin:40px auto;padding:28px;background:#fff;border-radius:14px;box-shadow:0 4px 18px #0001}h1{text-align:center;font-size:28px;margin:0 0 8px}.lead{text-align:center;color:#666;margin:0 0 24px}label{display:block;margin:18px 0 8px;font-weight:bold}input,button{width:100%;padding:13px;font-size:16px;border:1px solid #ccc;border-radius:8px}button{margin-top:24px;background:#333;color:#fff;border:0;cursor:pointer}.result{margin-top:24px;padding:20px;background:#f7f7f7;border-radius:10px;text-align:center}.main{font-size:30px;font-weight:bold;margin:8px 0 12px}.sub{color:#666}.note{font-size:13px;color:#666;line-height:1.6;margin-top:18px}@media(max-width:600px){.box{margin:16px;padding:22px}.main{font-size:27px}}</style></head>
+<body><div class="box"><h1>経過時間計算機</h1><p class="lead">Calculate the time between a start and end time</p>
+<label>開始時刻</label><input id="start" type="time" value="09:00">
+<label>終了時刻</label><input id="end" type="time" value="17:00">
+<button onclick="calc()">Calculate</button>
+<div class="result"><div class="main" id="result">---</div><div class="sub" id="minutes">---</div></div>
+<p class="note">If the end time is earlier than the start time, it is treated as the next day.</p></div>
+<script>function calc(){const s=document.getElementById("start").value,e=document.getElementById("end").value;if(!s||!e){alert("Please enter both a start and end time.");return}const a=s.split(":").map(Number),b=e.split(":").map(Number);let sm=a[0]*60+a[1],em=b[0]*60+b[1];let d=em-sm;if(d<0)d+=1440;const h=Math.floor(d/60),m=d%60;document.getElementById("result").textContent=h+"時間"+m+" minutes";document.getElementById("minutes").textContent=d.toLocaleString()+"分";}</script></body></html>
