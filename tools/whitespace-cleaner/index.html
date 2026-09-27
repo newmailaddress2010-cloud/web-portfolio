@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>空白・改行整理ツール</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="container">
+<h1>空白・改行整理ツール</h1>
+<p class="lead">文章の余分な空白や空行をまとめて整理できます。</p>
+
+<label for="input">入力</label>
+<textarea id="input" placeholder="文章をここに貼り付けてください"></textarea>
+
+<div class="options">
+<label class="check"><input type="checkbox" id="trim"> 各行の前後の空白を削除</label>
+<label class="check"><input type="checkbox" id="spaces"> 連続する空白を1つにする</label>
+<label class="check"><input type="checkbox" id="blank"> 連続する空行を1行にする</label>
+<label class="check"><input type="checkbox" id="removeBlank"> 空行をすべて削除</label>
+</div>
+
+<button id="convert">整理する</button>
+
+<label for="output">結果</label>
+<textarea id="output" readonly></textarea>
+
+<div class="actions">
+<button id="copy" class="secondary">結果をコピー</button>
+<button id="clear" class="secondary">クリア</button>
+</div>
+<p id="status" class="status"></p>
+
+<section class="guide">
+<h2>使い方</h2>
+<ol>
+<li>文章を貼り付けます。</li>
+<li>整理したい項目を選びます。</li>
+<li>「整理する」を押します。</li>
+</ol>
+<p>入力内容はブラウザ内だけで処理され、サーバーへ送信されません。</p>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
