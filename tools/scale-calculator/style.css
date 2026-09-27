@@ -26,3 +26,5 @@ button{border:0;border-radius:9px;padding:10px 13px;font-size:14px;cursor:pointe
 .info p{color:#666;line-height:1.7;font-size:14px}
 .hidden{display:none}
 @media(max-width:480px){h1{font-size:26px}.card{padding:17px}.result-grid strong{font-size:21px}}
+
+select{width:100%;font-size:16px;padding:12px;border:1px solid #cfd2d7;border-radius:9px;background:#fff}
