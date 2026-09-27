@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>複利計算シミュレーター</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:#f5f7fb;color:#222}.wrap{max-width:760px;margin:0 auto;padding:24px 16px 50px}h1{font-size:28px;text-align:center;margin:8px 0 8px}.lead{text-align:center;color:#666;margin:0 0 24px}.card{background:#fff;border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:0 3px 14px rgba(0,0,0,.06)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field label{display:block;font-weight:600;margin-bottom:7px}.field input,.field select{width:100%;padding:12px;border:1px solid #ccd2dc;border-radius:9px;font-size:16px;background:#fff}.unit{position:relative}.unit span{position:absolute;right:12px;top:12px;color:#777}.unit input{padding-right:42px}button{width:100%;border:0;border-radius:10px;padding:13px;font-size:17px;font-weight:700;cursor:pointer;background:#222;color:#fff;margin-top:18px}.result-main{text-align:center;padding:10px 0 18px}.result-main .label{color:#666}.total{font-size:34px;font-weight:800;margin:5px 0 16px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{background:#f5f7fb;border-radius:10px;padding:14px;text-align:center}.stat b{display:block;font-size:21px;margin-top:5px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 8px;border-bottom:1px solid #e4e7ec;text-align:right}th:first-child,td:first-child{text-align:center}th{background:#f5f7fb}.note{font-size:13px;color:#777;line-height:1.7;margin-top:18px}.hidden{display:none}.links{text-align:center;font-size:13px;margin-top:20px}.links a{color:#555}.bar{height:18px;background:#e8ebf0;border-radius:20px;overflow:hidden;margin:12px 0}.bar div{height:100%;background:#555}.error{color:#b00020;text-align:center;margin-top:10px}@media(max-width:600px){.grid{grid-template-columns:1fr}h1{font-size:24px}.total{font-size:29px}.wrap{padding-top:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>複利計算シミュレーター</h1>
+<p class="lead">元本と毎月の積立が、複利でどのくらい増えるか計算します。</p>
+
+<div class="card">
+<div class="grid">
+<div class="field"><label for="principal">初期資金</label><div class="unit"><input id="principal" type="number" min="0" step="1000" value="100000"><span>円</span></div></div>
+<div class="field"><label for="monthly">毎月の積立額</label><div class="unit"><input id="monthly" type="number" min="0" step="1000" value="30000"><span>円</span></div></div>
+<div class="field"><label for="rate">年利</label><div class="unit"><input id="rate" type="number" min="0" max="100" step="0.01" value="5"><span>%</span></div></div>
+<div class="field"><label for="years">運用期間</label><div class="unit"><input id="years" type="number" min="1" max="100" step="1" value="20"><span>年</span></div></div>
+<div class="field"><label for="freq">複利の頻度</label><select id="freq"><option value="1">年1回</option><option value="2">半年ごと</option><option value="4">四半期ごと</option><option value="12" selected>毎月</option><option value="365">毎日</option></select></div>
+<div class="field"><label for="timing">積立のタイミング</label><select id="timing"><option value="end" selected>月末に積み立てる</option><option value="start">月初に積み立てる</option></select></div>
+</div>
+<button id="calc">計算する</button>
+<div id="error" class="error"></div>
+</div>
+
+<div id="results" class="card hidden">
+<div class="result-main"><div class="label">予想される将来額</div><div class="total" id="future">—</div></div>
+<div class="stats">
+<div class="stat">積立元本<b id="contributed">—</b></div>
+<div class="stat">増えた金額<b id="interest">—</b></div>
+</div>
+<div class="bar"><div id="interestBar"></div></div>
+<p id="ratio" style="text-align:center;color:#666;margin:0"></p>
+</div>
+
+<div id="scheduleCard" class="card hidden">
+<h2>年ごとの推移</h2>
+<div class="table-wrap"><table><thead><tr><th>年</th><th>積立元本</th><th>増加額</th><th>残高</th></tr></thead><tbody id="schedule"></tbody></table></div>
+<p class="note">この計算は、入力した年利が運用期間中ずっと一定であると仮定したシミュレーションです。実際の投資成果を保証するものではなく、税金・手数料・価格変動などは考慮していません。</p>
+</div>
+
+<div class="links"><a href="../../">Webツール一覧へ戻る</a></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function money(n){return Math.round(n).toLocaleString("ja-JP")+"円";}
+function calculate(){
+ const P=Number($("principal").value), M=Number($("monthly").value), annual=Number($("rate").value), years=Number($("years").value), f=Number($("freq").value), timing=$("timing").value;
+ const err=$("error"); err.textContent="";
+ if(!Number.isFinite(P)||!Number.isFinite(M)||!Number.isFinite(annual)||!Number.isFinite(years)||P<0||M<0||annual<0||years<1||years>100){err.textContent="入力内容を確認してください。";return;}
+ // The calculator uses monthly contribution periods. Interest is applied monthly using an equivalent monthly rate derived from the selected compounding frequency.
+ const annualRate=annual/100;
+ const monthlyRate=Math.pow(1+annualRate/f,f/12)-1;
+ let balance=P, contributed=P, rows=[];
+ for(let y=1;y<=years;y++){
+   for(let m=1;m<=12;m++){
+     if(timing==="start") balance+=M, contributed+=M;
+     balance*=1+monthlyRate;
+     if(timing==="end") balance+=M, contributed+=M;
+   }
+   rows.push({y,contributed,balance,interest:balance-contributed});
+ }
+ const interest=balance-contributed;
+ $("future").textContent=money(balance); $("contributed").textContent=money(contributed); $("interest").textContent=money(interest);
+ const pct=balance>0?Math.max(0,Math.min(100,interest/balance*100)):0; $("interestBar").style.width=pct+"%"; $("ratio").textContent="増えた金額の割合："+pct.toFixed(1)+"%";
+ $("schedule").innerHTML=rows.map(r=>"<tr><td>"+r.y+"年目</td><td>"+money(r.contributed)+"</td><td>"+money(r.interest)+"</td><td>"+money(r.balance)+"</td></tr>").join("");
+ $("results").classList.remove("hidden"); $("scheduleCard").classList.remove("hidden");
+}
+$("calc").addEventListener("click",calculate);
+["principal","monthly","rate","years","freq","timing"].forEach(id=>$(id).addEventListener("change",calculate));
+calculate();
+</script>
+</body>
+</html>
