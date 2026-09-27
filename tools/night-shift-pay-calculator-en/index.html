@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Night Shift Pay Calculator | 10 PM–5 AM Premium</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f5f7fb;color:#1f2937}
+.container{max-width:720px;margin:0 auto;padding:24px 16px 40px}.card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 18px rgba(0,0,0,.07)}
+h1{font-size:24px;margin:0 0 8px}.lead{color:#64748b;margin:0 0 22px;line-height:1.6}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{margin-bottom:14px}label{display:block;font-weight:700;margin-bottom:6px}input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff}
+button{width:100%;padding:13px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}
+.result{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}.box{background:#f8fafc;border-radius:12px;padding:14px}.box span{display:block;color:#64748b;font-size:13px}.box strong{display:block;font-size:21px;margin-top:4px}
+.total{grid-column:1/-1;background:#eef6ff}.total strong{font-size:28px}
+.note{font-size:13px;color:#64748b;line-height:1.7;margin-top:18px}
+.error{color:#dc2626;font-weight:700;margin-top:12px}
+@media(max-width:560px){.grid,.result{grid-template-columns:1fr}.total{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="container"><div class="card">
+<h1>Night Shift Pay Calculator</h1>
+<p class="lead">Calculate pay including the minimum 25% premium for work between 10:00 PM and 5:00 AM.</p>
+<div class="grid">
+<div class="field"><label for="wage">Regular hourly wage</label><input id="wage" type="number" min="0" step="1" placeholder="1200"></div>
+<div class="field"><label for="start">Start time</label><input id="start" type="time" value="18:00"></div>
+<div class="field"><label for="end">End time</label><input id="end" type="time" value="24:00"></div>
+<div class="field"><label for="break">Total break (minutes)</label><input id="break" type="number" min="0" step="1" value="0"></div>
+<div class="field"><label for="nightBreak">Break during night hours (minutes)</label><input id="nightBreak" type="number" min="0" step="1" value="0"></div>
+</div>
+<button onclick="calc()">Calculate</button>
+<div id="error" class="error"></div>
+<div id="result" class="result" hidden>
+<div class="box"><span>Working time</span><strong id="hours">-</strong></div>
+<div class="box"><span>Night hours</span><strong id="nightHours">-</strong></div>
+<div class="box"><span>Night premium</span><strong id="premium">-</strong></div>
+<div class="box"><span>Regular pay</span><strong id="regularPay">-</strong></div>
+<div class="box total"><span>Total pay (including premium)</span><strong id="total">-</strong></div>
+</div>
+<p class="note">※深夜労働は原則22:00〜翌5:00で、25%以上の割増賃金が必要です。<br>※この計算機は深夜割増のみを計算します。hours外労働・法定休日労働・月60時間超の時間外労働・各種手当などは含みません。実際の賃金計算は勤務先の賃金規程等も確認してください。</p>
+</div></div>
+<script>
+function toMin(t){const [h,m]=t.split(":").map(Number);return h*60+m}
+function overlap(a,b,c,d){let total=0;for(let day=0;day<2;day++){const s=c+day*1440,e=d+day*1440;total+=Math.max(0,Math.min(b,e)-Math.max(a,s))}return total}
+function calc(){
+ const wage=Number(document.getElementById("wage").value), s=toMin(document.getElementById("start").value), e0=toMin(document.getElementById("end").value);
+ const br=Number(document.getElementById("break").value)||0, nbr=Number(document.getElementById("nightBreak").value)||0;
+ const err=document.getElementById("error"); err.textContent="";
+ let e=e0;if(e<=s)e+=1440;
+ const gross=e-s;
+ if(!(wage>=0)||gross<=0||br<0||nbr<0||nbr>br||br>=gross){err.textContent="Please check your inputs. Break time must not exceed the total working period.";document.getElementById("result").hidden=true;return}
+ const nightRaw=overlap(s,e,1320,1740);
+ const night=Math.max(0,nightRaw-nbr);
+ const work=gross-br, regular=Math.max(0,work-night);
+ const premium=night*wage*.25, regularPay=regular*wage, total=regularPay+night*wage*1.25;
+ const money=n=>Math.round(n).toLocaleString("ja-JP")+"JPY";
+ document.getElementById("hours").textContent=(work/60).toFixed(2)+"時間";
+ document.getElementById("nightHours").textContent=(night/60).toFixed(2)+"時間";
+ document.getElementById("premium").textContent=money(premium);
+ document.getElementById("regularPay").textContent=money(regularPay);
+ document.getElementById("total").textContent=money(total);
+ document.getElementById("result").hidden=false;
+}
+</script>
+</body></html>
