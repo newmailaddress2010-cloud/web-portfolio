@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>乱数・ランダム数生成ツール</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:#f5f7fb;color:#222}.wrap{max-width:700px;margin:auto;padding:24px 16px 50px}h1{text-align:center;font-size:28px;margin:8px 0}.lead{text-align:center;color:#666;margin:0 0 24px}.card{background:#fff;border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:0 3px 14px rgba(0,0,0,.06)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field label{display:block;font-weight:600;margin-bottom:7px}.field input,.field select{width:100%;padding:12px;border:1px solid #ccd2dc;border-radius:9px;font-size:16px;background:#fff}.check{display:flex;align-items:center;gap:9px;margin-top:16px}.check input{width:18px;height:18px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}button{border:0;border-radius:10px;padding:13px;font-size:16px;font-weight:700;cursor:pointer;background:#222;color:#fff}button.secondary{background:#eef1f5;color:#222}.result{margin-top:18px;background:#f5f7fb;border-radius:12px;padding:16px}.numbers{display:flex;flex-wrap:wrap;gap:10px}.num{background:#fff;border:1px solid #e0e4ea;border-radius:9px;padding:10px 13px;font-size:18px;font-weight:700}.count{text-align:center;color:#666;font-size:13px;margin-top:14px}.error{color:#b00020;text-align:center;margin-top:10px}.note{font-size:13px;color:#777;line-height:1.7}.links{text-align:center;font-size:13px;margin-top:20px}@media(max-width:600px){.grid{grid-template-columns:1fr}h1{font-size:24px}.actions{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<h1>乱数・ランダム数生成ツール</h1>
+<p class="lead">指定した範囲からランダムな数字をまとめて生成します。</p>
+<div class="card">
+<div class="grid">
+<div class="field"><label>最小値</label><input id="min" type="number" value="1" step="any"></div>
+<div class="field"><label>最大値</label><input id="max" type="number" value="100" step="any"></div>
+<div class="field"><label>生成する個数</label><input id="count" type="number" min="1" max="1000" value="5"></div>
+<div class="field"><label>数字の種類</label><select id="type"><option value="int">整数</option><option value="decimal">小数</option></select></div>
+</div>
+<label class="check"><input id="unique" type="checkbox"> 重複しない数字だけ生成する</label>
+<div class="actions" style="margin-top:18px"><button id="generate">生成する</button><button id="copy" class="secondary">結果をコピー</button></div>
+<div id="error" class="error"></div>
+<div class="result"><div class="numbers" id="result"></div><div class="count" id="countText"></div></div>
+</div>
+<div class="card"><p class="note">乱数はブラウザ内で生成されます。重複なしの整数を指定する場合、生成できる個数には範囲の大きさによる上限があります。</p></div>
+<div class="links"><a href="../../">Webツール一覧へ戻る</a></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);let values=[];
+function generate(){
+ const min=+$("min").value,max=+$("max").value,n=+$("count").value,unique=$("unique").checked,type=$("type").value;
+ $("error").textContent="";
+ if(!Number.isFinite(min)||!Number.isFinite(max)||max<min||n<1||n>1000){$("error").textContent="入力内容を確認してください。";return}
+ if(unique&&type==="int"&&Math.floor(max)-Math.ceil(min)+1<n){$("error").textContent="重複なしでは、この範囲から指定個数を生成できません。";return}
+ if(unique&&type==="decimal"){/* decimal values are effectively unique */
+ }
+ values=[];
+ if(type==="int"){
+   if(unique){
+     const used=new Set();
+     while(values.length<n){const x=Math.floor(Math.random()*(Math.floor(max)-Math.ceil(min)+1))+Math.ceil(min);if(!used.has(x)){used.add(x);values.push(x)}}
+   }else for(let i=0;i<n;i++)values.push(Math.floor(Math.random()*(Math.floor(max)-Math.ceil(min)+1))+Math.ceil(min));
+ }else{
+   for(let i=0;i<n;i++){let x=min+Math.random()*(max-min);values.push(Number(x.toFixed(6)))}
+ }
+ $("result").innerHTML=values.map(x=>'<span class="num">'+x.toLocaleString("ja-JP")+"</span>").join("");
+ $("countText").textContent=values.length+"個生成しました";
+}
+$("generate").onclick=generate;
+$("copy").onclick=async()=>{if(!values.length)return;await navigator.clipboard.writeText(values.join("\n"));$("countText").textContent="結果をコピーしました";}
+generate();
+</script></body></html>
