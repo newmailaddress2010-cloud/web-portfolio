@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>改行・区切り文字変換ツール</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="container">
+<h1>改行・区切り文字変換ツール</h1>
+<p class="lead">カンマ区切りや文章を、1行ずつのリストに変換したり、1行を区切り文字でつなげたりできます。</p>
+
+<label for="input">入力</label>
+<textarea id="input" placeholder="りんご,バナナ,みかん"></textarea>
+
+<div class="grid">
+<div>
+<label for="mode">変換方法</label>
+<select id="mode">
+<option value="toLines">区切り文字 → 改行</option>
+<option value="toSeparator">改行 → 区切り文字</option>
+</select>
+</div>
+<div>
+<label for="separator">区切り文字</label>
+<input id="separator" type="text" value="," maxlength="10">
+</div>
+</div>
+
+<label class="check"><input type="checkbox" id="trim"> 各項目の前後の空白を削除</label>
+
+<button id="convert">変換する</button>
+
+<label for="output">結果</label>
+<textarea id="output" readonly></textarea>
+
+<div class="actions">
+<button id="copy" class="secondary">結果をコピー</button>
+<button id="clear" class="secondary">クリア</button>
+</div>
+<p id="status" class="status"></p>
+
+<section class="guide">
+<h2>使い方</h2>
+<ol>
+<li>変換したい文章を入力します。</li>
+<li>変換方法と区切り文字を選びます。</li>
+<li>「変換する」を押します。</li>
+</ol>
+<p>入力内容はブラウザ内だけで処理され、サーバーへ送信されません。</p>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
