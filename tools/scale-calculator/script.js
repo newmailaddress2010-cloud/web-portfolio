@@ -1,6 +1,7 @@
 const widthEl=document.getElementById("width");
 const heightEl=document.getElementById("height");
 const rateEl=document.getElementById("rate");
+const rateSelect=document.getElementById("rateSelect");
 const result=document.getElementById("result");
 const newWidth=document.getElementById("newWidth");
 const newHeight=document.getElementById("newHeight");
@@ -21,9 +22,10 @@ function calculate(){
   summary.textContent=`元のサイズ ${formatNumber(w)} × ${formatNumber(h)} → ${formatNumber(nw)} × ${formatNumber(nh)}（${formatNumber(r)}%）`;
   result.classList.remove("hidden");
 }
+rateSelect.addEventListener("change",()=>{rateEl.value=rateSelect.value;});
 document.getElementById("calc").addEventListener("click",calculate);
 document.querySelectorAll("[data-rate]").forEach(btn=>{
-  btn.addEventListener("click",()=>{rateEl.value=btn.dataset.rate*100;calculate();});
+  btn.addEventListener("click",()=>{rateEl.value=btn.dataset.rate*100;rateSelect.value=rateEl.value;calculate();});
 });
 document.getElementById("copy").addEventListener("click",async()=>{
   const text=summary.textContent;
@@ -33,4 +35,4 @@ document.getElementById("copy").addEventListener("click",async()=>{
     setTimeout(()=>document.getElementById("copy").textContent="結果をコピー",1200);
   }catch(e){alert(text);}
 });
-[widthEl,heightEl,rateEl].forEach(el=>el.addEventListener("keydown",e=>{if(e.key==="Enter")calculate();}));
+[widthEl,heightEl,rateEl,rateSelect].forEach(el=>el.addEventListener("keydown",e=>{if(e.key==="Enter")calculate();}));
