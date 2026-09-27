@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>残業代計算機｜時間外・深夜・休日・60時間超</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f5f7fb;color:#1f2937}.wrap{max-width:760px;margin:auto;padding:24px 16px 40px}.card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 18px rgba(0,0,0,.07)}h1{font-size:24px;margin:0 0 8px}.lead{color:#64748b;line-height:1.6;margin:0 0 22px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{margin-bottom:14px}label{display:block;font-weight:700;margin-bottom:6px}input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px}button{width:100%;padding:13px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}.hint{font-size:12px;color:#64748b;margin-top:5px}.error{color:#dc2626;font-weight:700;margin-top:12px}.result{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}.box{background:#f8fafc;border-radius:12px;padding:14px}.box span{display:block;color:#64748b;font-size:13px}.box strong{display:block;font-size:20px;margin-top:4px}.total{grid-column:1/-1;background:#eef6ff}.total strong{font-size:28px}.note{font-size:13px;color:#64748b;line-height:1.7;margin-top:18px}@media(max-width:560px){.grid,.result{grid-template-columns:1fr}.total{grid-column:auto}}
+</style></head>
+<body><div class="wrap"><div class="card">
+<h1>残業代計算機</h1>
+<p class="lead">基本時給と残業時間から、時間外・深夜・法定休日・月60時間超の割増賃金を計算します。</p>
+<div class="grid">
+<div class="field"><label>基本時給（円）</label><input id="w" type="number" min="0" step="1" placeholder="1500"></div>
+<div class="field"><label>時間外労働（月60時間以内・時間）</label><input id="o" type="number" min="0" step="0.25" value="0"></div>
+<div class="field"><label>時間外＋深夜（時間）</label><input id="on" type="number" min="0" step="0.25" value="0"><div class="hint">時間外労働のうち22:00〜5:00に重なる時間</div></div>
+<div class="field"><label>月60時間超の時間外（時間）</label><input id="o60" type="number" min="0" step="0.25" value="0"></div>
+<div class="field"><label>月60時間超＋深夜（時間）</label><input id="o60n" type="number" min="0" step="0.25" value="0"></div>
+<div class="field"><label>法定休日労働（時間）</label><input id="h" type="number" min="0" step="0.25" value="0"></div>
+<div class="field"><label>法定休日＋深夜（時間）</label><input id="hn" type="number" min="0" step="0.25" value="0"></div>
+</div>
+<button onclick="calc()">残業代を計算する</button><div id="err" class="error"></div>
+<div id="res" class="result" hidden>
+<div class="box"><span>時間外（25%）</span><strong id="a">-</strong></div>
+<div class="box"><span>時間外＋深夜（50%）</span><strong id="b">-</strong></div>
+<div class="box"><span>60時間超（50%）</span><strong id="c">-</strong></div>
+<div class="box"><span>60時間超＋深夜（75%）</span><strong id="d">-</strong></div>
+<div class="box"><span>法定休日（35%）</span><strong id="e">-</strong></div>
+<div class="box"><span>法定休日＋深夜（60%）</span><strong id="f">-</strong></div>
+<div class="box total"><span>割増賃金の合計</span><strong id="t">-</strong></div>
+</div>
+<p class="note">※法定の最低割増率を前提にした目安です。時間外25%、深夜25%、法定休日35%、月60時間を超える時間外50%。時間外と深夜が重なる場合は割増率を加算します。<br>※この計算機は「割増分を含む賃金額」を表示します。実際の給与計算では、基礎賃金・所定労働時間・就業規則・端数処理などにより結果が異なる場合があります。</p>
+</div></div>
+<script>
+function money(n){return Math.round(n).toLocaleString("ja-JP")+"円"}
+function num(id){return Number(document.getElementById(id).value)||0}
+function calc(){
+ const w=num("w"),o=num("o"),on=num("on"),o60=num("o60"),o60n=num("o60n"),h=num("h"),hn=num("hn");
+ const err=document.getElementById("err");err.textContent="";
+ if(w<=0||[o,on,o60,o60n,h,hn].some(x=>x<0)||on>o||o60n>o60||hn>h){err.textContent="入力内容を確認してください。深夜時間は各区分の時間を超えないようにしてください。";document.getElementById("res").hidden=true;return}
+ const a=w*1.25*o,b=w*1.5*on,c=w*1.5*o60,d=w*1.75*o60n,e=w*1.35*h,f=w*1.6*hn,t=a+b+c+d+e+f;
+ [["a",a],["b",b],["c",c],["d",d],["e",e],["f",f],["t",t]].forEach(([id,v])=>document.getElementById(id).textContent=money(v));
+ document.getElementById("res").hidden=false;
+}
+</script></body></html>
