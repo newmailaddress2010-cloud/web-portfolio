@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>単位換算ツール</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:#f5f7fb;color:#222}.wrap{max-width:820px;margin:auto;padding:24px 16px 50px}h1{text-align:center;font-size:28px;margin:8px 0}.lead{text-align:center;color:#666;margin:0 0 24px}.card{background:#fff;border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:0 3px 14px rgba(0,0,0,.06)}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.tabs button{width:auto;margin:0;padding:9px 13px;background:#eef1f5;color:#333;font-size:14px}.tabs button.active{background:#222;color:#fff}.convert{display:grid;grid-template-columns:1fr 60px 1fr;gap:12px;align-items:end}.field label{display:block;font-weight:600;margin-bottom:7px}.field input,.field select{width:100%;padding:12px;border:1px solid #ccd2dc;border-radius:9px;font-size:16px;background:#fff}.swap{height:45px;border:0;border-radius:9px;background:#eef1f5;color:#222;font-size:20px;cursor:pointer}.result{margin-top:20px;padding:18px;background:#f5f7fb;border-radius:12px;text-align:center}.result .label{font-size:13px;color:#666}.result .value{font-size:30px;font-weight:800;margin-top:4px;word-break:break-word}.formula{font-size:13px;color:#777;text-align:center;margin:15px 0 0}.note{font-size:13px;color:#777;line-height:1.7}.hidden{display:none}.links{text-align:center;font-size:13px;margin-top:20px}@media(max-width:600px){.convert{grid-template-columns:1fr}.swap{width:100%;height:40px}h1{font-size:24px}}
+</style>
+</head>
+<body><div class="wrap">
+<h1>単位換算ツール</h1>
+<p class="lead">長さ・重さ・温度・体積などをすばやく換算できます。</p>
+<div class="card">
+<div class="tabs" id="tabs"></div>
+<div class="convert">
+<div class="field"><label>変換前</label><input id="value" type="number" value="1" step="any"></div>
+<div><button class="swap" id="swap" title="単位を入れ替える">⇄</button></div>
+<div class="field"><label>変換後</label><select id="to"></select></div>
+</div>
+<div class="field" style="margin-top:16px"><label>変換元の単位</label><select id="from"></select></div>
+<div class="result"><div class="label">変換結果</div><div class="value" id="result">—</div></div>
+<div class="formula" id="formula"></div>
+</div>
+<div class="card"><p class="note">換算係数は一般的な標準値を使用しています。温度やデータ容量など、定義によって扱いが異なる場合があります。結果は参考値としてご利用ください。</p></div>
+<div class="links"><a href="../../">Webツール一覧へ戻る</a></div>
+</div>
+<script>
+const data={
+length:{label:"長さ",units:{mm:["ミリメートル",1],cm:["センチメートル",10],m:["メートル",1000],km:["キロメートル",1000000],in:["インチ",25.4],ft:["フィート",304.8],yd:["ヤード",914.4],mi:["マイル",1609344]}},
+weight:{label:"重さ",units:{mg:["ミリグラム",1],g:["グラム",1000],kg:["キログラム",1000000],oz:["オンス",28349.523125],lb:["ポンド",453592.37]}},
+temperature:{label:"温度",units:{c:["摂氏 (°C)","c"],f:["華氏 (°F)","f"],k:["ケルビン (K)","k"]}},
+volume:{label:"体積",units:{ml:["ミリリットル",1],l:["リットル",1000],cup:["USカップ",236.5882365],pt:["USパイント",473.176473],gal:["USガロン",3785.411784]}},
+area:{label:"面積",units:{cm2:["平方センチメートル",1],m2:["平方メートル",10000],km2:["平方キロメートル",10000000000],ft2:["平方フィート",929.0304],acre:["エーカー",4046856.4224]}},
+speed:{label:"速度",units:{mps:["メートル/秒",1],kph:["キロメートル/時",0.2777777778],mph:["マイル/時",0.44704],knot:["ノット",0.5144444444]}},
+data:{label:"データ容量",units:{b:["バイト",1],kb:["KB",1024],mb:["MB",1048576],gb:["GB",1073741824],tb:["TB",1099511627776]}}
+};
+let category="length";
+const $=id=>document.getElementById(id);
+function populate(){
+ $("tabs").innerHTML=Object.entries(data).map(([k,v])=>'<button class="'+(k===category?"active":"")+'" data-cat="'+k+'">'+v.label+"</button>").join("");
+ document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{category=b.dataset.cat;populate();});
+ const units=data[category].units;
+ $("from").innerHTML=Object.entries(units).map(([k,v])=>'<option value="'+k+'">'+v[0]+"</option>").join("");
+ $("to").innerHTML=Object.entries(units).map(([k,v])=>'<option value="'+k+'">'+v[0]+"</option>").join("");
+ const keys=Object.keys(units); $("from").value=keys[0]; $("to").value=keys[1]||keys[0];
+ calculate();
+}
+function convertTemp(x,a,b){let c=a==="c"?x:a==="f"?(x-32)*5/9:x-273.15;return b==="c"?c:b==="f"?c*9/5+32:c+273.15}
+function calculate(){
+ const x=Number($("value").value),a=$("from").value,b=$("to").value;
+ if(!Number.isFinite(x)){$("result").textContent="—";return}
+ let y;
+ if(category==="temperature")y=convertTemp(x,a,b);else{const units=data[category].units;y=x*units[a][1]/units[b][1]}
+ $("result").textContent=Number(y.toPrecision(12)).toLocaleString("ja-JP",{maximumFractionDigits:10});
+ $("formula").textContent=a===b?"同じ単位です。":"リアルタイム換算";
+}
+$("value").oninput=calculate;$("from").onchange=calculate;$("to").onchange=calculate;
+$("swap").onclick=()=>{let a=$("from").value;$("from").value=$("to").value;$("to").value=a;calculate()};populate();
+</script></body></html>
