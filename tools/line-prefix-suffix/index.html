@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行頭・行末文字追加ツール</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="container">
+<h1>行頭・行末文字追加ツール</h1>
+<p class="lead">複数行の文章に、同じ文字を行頭・行末へ一括で追加できます。</p>
+
+<label for="input">入力</label>
+<textarea id="input" placeholder="りんご
+バナナ
+みかん"></textarea>
+
+<div class="grid">
+<div>
+<label for="prefix">行頭に追加</label>
+<input id="prefix" type="text" placeholder="例：・">
+</div>
+<div>
+<label for="suffix">行末に追加</label>
+<input id="suffix" type="text" placeholder="例：。">
+</div>
+</div>
+
+<label class="check"><input type="checkbox" id="blank"> 空行にも追加する</label>
+
+<button id="convert">変換する</button>
+
+<label for="output">結果</label>
+<textarea id="output" readonly></textarea>
+
+<div class="actions">
+<button id="copy" class="secondary">結果をコピー</button>
+<button id="clear" class="secondary">クリア</button>
+</div>
+<p id="status" class="status"></p>
+
+<section class="guide">
+<h2>使い方</h2>
+<ol>
+<li>文章を1行ずつ入力します。</li>
+<li>行頭・行末に追加したい文字を入力します。</li>
+<li>「変換する」を押します。</li>
+</ol>
+<p>入力内容はブラウザ内だけで処理され、サーバーへ送信されません。</p>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
