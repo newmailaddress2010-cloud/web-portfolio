@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>N日後・N日前の日付計算機</title>
+<meta name="description" content="指定した日付からN日後・N日前の日付と曜日をすぐに計算できる無料ツールです。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <h1>N日後・N日前の日付計算機</h1>
+  <p class="lead">基準日から、指定した日数だけ前後の日付を計算します。</p>
+  <section class="card">
+    <label for="base">基準日</label>
+    <input id="base" type="date">
+    <label for="days">日数</label>
+    <input id="days" type="number" min="0" step="1" value="7" inputmode="numeric">
+    <div class="buttons">
+      <button data-sign="-1">N日前</button>
+      <button data-sign="1">N日後</button>
+    </div>
+    <button id="today" class="sub">今日を基準日にする</button>
+  </section>
+  <section id="result" class="result" hidden></section>
+  <section class="guide card">
+    <h2>使い方</h2>
+    <p>基準日と日数を入力して「N日前」または「N日後」を押してください。結果の日付と曜日を表示します。</p>
+    <p>「30日後は何日？」「90日前はいつ？」などの日付確認に使えます。</p>
+  </section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
