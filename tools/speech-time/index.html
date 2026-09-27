@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="スピーチや発表原稿を貼り付けるだけで、話す時間と目標時間との差をチェックできます。">
+<title>スピーチ・発表時間チェッカー</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="container">
+<header>
+<p class="eyebrow">SPEECH TIME TOOL</p>
+<h1>スピーチ・発表時間チェッカー</h1>
+<p class="lead">原稿を貼るだけ。「この長さで時間内に終わる？」をチェックします。</p>
+</header>
+
+<section class="card">
+<label for="text">発表原稿</label>
+<textarea id="text" rows="10" placeholder="ここにスピーチ・発表原稿を貼り付けてください。"></textarea>
+
+<div class="grid">
+<div>
+<label for="target">目標時間</label>
+<select id="target">
+<option value="60">1分</option>
+<option value="180" selected>3分</option>
+<option value="300">5分</option>
+<option value="600">10分</option>
+<option value="900">15分</option>
+<option value="1200">20分</option>
+<option value="1800">30分</option>
+</select>
+</div>
+<div>
+<label for="speed">話す速さ</label>
+<select id="speed">
+<option value="250">ゆっくり（250字/分）</option>
+<option value="300" selected>標準（300字/分）</option>
+<option value="350">速め（350字/分）</option>
+</select>
+</div>
+</div>
+
+<button id="checkBtn">時間をチェック</button>
+</section>
+
+<section class="card result-card" id="resultCard" hidden>
+<h2>チェック結果</h2>
+<div class="result-main">
+<div><span class="result-label">文字数</span><strong id="count">0</strong><span>文字</span></div>
+<div><span class="result-label">予想時間</span><strong id="time">0:00</strong></div>
+</div>
+<div class="status" id="status"></div>
+<div class="detail" id="detail"></div>
+<div class="meter"><div id="meterBar"></div></div>
+<p class="note">話す速さや間、スライド操作などで実際の時間は変わります。あくまで目安です。</p>
+</section>
+
+<section class="card">
+<h2>目安</h2>
+<p class="guide">日本語のスピーチは、標準で<strong>1分約300文字</strong>を目安に計算します。ゆっくりなら約250文字、速めなら約350文字です。 cite_placeholder</p>
+<div class="table">
+<div><span>1分</span><b>約300文字</b></div>
+<div><span>3分</span><b>約900文字</b></div>
+<div><span>5分</span><b>約1,500文字</b></div>
+<div><span>10分</span><b>約3,000文字</b></div>
+</div>
+</section>
+
+<footer>
+<p>入力した原稿はこのブラウザ内だけで処理され、外部へ送信されません。</p>
+<p><a href="../">ツール一覧へ</a></p>
+</footer>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
