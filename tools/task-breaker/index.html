@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="大きな用事を、今すぐできる小さな一歩に分解する無料Webアプリ。">
+<title>先延ばし分解メーカー</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+<header><p class="eyebrow">FREE WEB TOOL</p><h1>先延ばし分解メーカー</h1><p class="lead">「やらなきゃ」と思っていることを、今すぐ始められる小さな一歩に分けます。</p></header>
+<section class="card">
+<label for="task">やること</label>
+<textarea id="task" rows="3" maxlength="200" placeholder="例：部屋を片付ける&#10;例：確定申告をする&#10;例：メールを返信する"></textarea>
+<label>最初の一歩の大きさ</label>
+<div class="sizes"><button class="size active" data-min="5">5分</button><button class="size" data-min="15">15分</button><button class="size" data-min="30">30分</button></div>
+<button id="make" class="primary">小さく分解する</button>
+</section>
+<section id="result" class="result hidden" aria-live="polite">
+<div class="result-head"><div><p class="eyebrow">YOUR NEXT STEPS</p><h2>まずは、これだけ</h2></div><button id="copy" class="copy">結果をコピー</button></div>
+<ol id="steps"></ol><p id="tip" class="tip"></p><button id="again" class="secondary">別のことを分解する</button>
+</section>
+<section id="historyBox" class="history card hidden"><h2>最近分解したこと</h2><ul id="history"></ul><button id="clearHistory" class="text-button">履歴を消す</button></section>
+<footer><p>入力内容はこの端末のブラウザ内に保存されます。外部には送信しません。</p></footer>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
