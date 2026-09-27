@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ローン返済シミュレーター</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:#f5f7fb;color:#222}.wrap{max-width:760px;margin:auto;padding:24px 16px 50px}h1{text-align:center;font-size:28px;margin:8px 0}.lead{text-align:center;color:#666;margin:0 0 24px}.card{background:#fff;border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:0 3px 14px rgba(0,0,0,.06)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field label{display:block;font-weight:600;margin-bottom:7px}.field input{width:100%;padding:12px;border:1px solid #ccd2dc;border-radius:9px;font-size:16px}.unit{position:relative}.unit span{position:absolute;right:12px;top:12px;color:#777}.unit input{padding-right:45px}button{width:100%;border:0;border-radius:10px;padding:13px;font-size:17px;font-weight:700;cursor:pointer;background:#222;color:#fff;margin-top:18px}.main{text-align:center}.main .label{color:#666}.monthly{font-size:36px;font-weight:800;margin:5px 0 18px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{background:#f5f7fb;border-radius:10px;padding:14px;text-align:center}.stat b{display:block;font-size:21px;margin-top:5px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 8px;border-bottom:1px solid #e4e7ec;text-align:right}th:first-child,td:first-child{text-align:center}th{background:#f5f7fb}.note{font-size:13px;color:#777;line-height:1.7;margin-top:18px}.error{color:#b00020;text-align:center;margin-top:10px}.hidden{display:none}.links{text-align:center;font-size:13px;margin-top:20px}@media(max-width:600px){.grid{grid-template-columns:1fr}h1{font-size:24px}.monthly{font-size:30px}}
+</style>
+</head>
+<body><div class="wrap">
+<h1>ローン返済シミュレーター</h1>
+<p class="lead">借入額・金利・返済期間から、毎月の返済額と総返済額を計算します。</p>
+<div class="card"><div class="grid">
+<div class="field"><label>借入額</label><div class="unit"><input id="principal" type="number" min="1" step="10000" value="3000000"><span>円</span></div></div>
+<div class="field"><label>年利</label><div class="unit"><input id="rate" type="number" min="0" max="100" step="0.01" value="3"><span>%</span></div></div>
+<div class="field"><label>返済期間</label><div class="unit"><input id="years" type="number" min="1" max="50" step="1" value="10"><span>年</span></div></div>
+<div class="field"><label>返済回数</label><div class="unit"><input id="payments" type="number" min="1" max="600" step="1" value="120"><span>回</span></div></div>
+</div><button id="calc">計算する</button><div id="error" class="error"></div></div>
+<div id="result" class="card hidden"><div class="main"><div class="label">毎月の返済額</div><div class="monthly" id="monthly">—</div></div>
+<div class="stats"><div class="stat">総返済額<b id="total">—</b></div><div class="stat">支払う利息<b id="interest">—</b></div></div></div>
+<div id="scheduleCard" class="card hidden"><h2>年ごとの返済状況</h2><div class="table-wrap"><table><thead><tr><th>年</th><th>年間返済額</th><th>元金返済</th><th>利息</th><th>残高</th></tr></thead><tbody id="schedule"></tbody></table></div>
+<p class="note">元利均等返済を前提にした概算です。実際のローンでは、手数料、ボーナス返済、金利タイプ、金利変更などにより結果が異なる場合があります。借入や投資の判断は、金融機関の正式な返済条件をご確認ください。</p></div>
+<div class="links"><a href="../../">Webツール一覧へ戻る</a></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const money=n=>Math.round(n).toLocaleString("ja-JP")+"円";
+function calc(){
+ const P=+$("principal").value,r=+$("rate").value/100,n=+$("payments").value,years=+$("years").value;
+ $("error").textContent="";
+ if(!Number.isFinite(P)||!Number.isFinite(r)||!Number.isFinite(n)||!Number.isFinite(years)||P<=0||r<0||n<1||years<1||years>50){$("error").textContent="入力内容を確認してください。";return;}
+ const m=r/12;
+ const pay=m===0?P/n:P*m*Math.pow(1+m,n)/(Math.pow(1+m,n)-1);
+ let bal=P,total=0,rows=[],annualPay=0,annualPrincipal=0,annualInterest=0;
+ for(let i=1;i<=n;i++){
+  const interest=bal*m, principal=Math.min(bal,pay-interest), actual=principal+interest;
+  bal=Math.max(0,bal-principal); total+=actual; annualPay+=actual; annualPrincipal+=principal; annualInterest+=interest;
+  if(i%12===0||i===n){rows.push({year:Math.ceil(i/12),pay:annualPay,principal:annualPrincipal,interest:annualInterest,balance:bal});annualPay=annualPrincipal=annualInterest=0;}
+ }
+ $("monthly").textContent=money(pay);$("total").textContent=money(total);$("interest").textContent=money(total-P);
+ $("schedule").innerHTML=rows.map(x=>"<tr><td>"+x.year+"年目</td><td>"+money(x.pay)+"</td><td>"+money(x.principal)+"</td><td>"+money(x.interest)+"</td><td>"+money(x.balance)+"</td></tr>").join("");
+ $("result").classList.remove("hidden");$("scheduleCard").classList.remove("hidden");
+}
+$("calc").onclick=calc;["principal","rate","years","payments"].forEach(id=>$(id).onchange=calc);calc();
+</script></body></html>
