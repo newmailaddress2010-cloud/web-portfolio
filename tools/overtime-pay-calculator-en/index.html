@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Overtime Pay Calculator | Overtime, Night, Holiday</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f5f7fb;color:#1f2937}.wrap{max-width:760px;margin:auto;padding:24px 16px 40px}.card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 18px rgba(0,0,0,.07)}h1{font-size:24px;margin:0 0 8px}.lead{color:#64748b;line-height:1.6;margin:0 0 22px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{margin-bottom:14px}label{display:block;font-weight:700;margin-bottom:6px}input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px}button{width:100%;padding:13px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}.hint{font-size:12px;color:#64748b;margin-top:5px}.error{color:#dc2626;font-weight:700;margin-top:12px}.result{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}.box{background:#f8fafc;border-radius:12px;padding:14px}.box span{display:block;color:#64748b;font-size:13px}.box strong{display:block;font-size:20px;margin-top:4px}.total{grid-column:1/-1;background:#eef6ff}.total strong{font-size:28px}.note{font-size:13px;color:#64748b;line-height:1.7;margin-top:18px}@media(max-width:560px){.grid,.result{grid-template-columns:1fr}.total{grid-column:auto}}
+</style></head>
+<body><div class="wrap"><div class="card">
+<h1>Overtime Pay Calculator</h1>
+<p class="lead">Calculate pay for overtime, night work, statutory holidays, and overtime exceeding 60 hours per month.</p>
+<div class="grid">
+<div class="field"><label>Base hourly wage</label><input id="w" type="number" min="0" step="1" placeholder="1500"></div>
+<div class="field"><label>Overtime within 60 hours/month (hours)</label><input id="o" type="number" min="0" step="0.25" value="0"></div>
+<div class="field"><label>Overtime + night work (hours)</label><input id="on" type="number" min="0" step="0.25" value="0"><div class="hint">Hours overlapping 10 PM–5 AM</div></div>
+<div class="field"><label>Overtime over 60 hours/month (hours)</label><input id="o60" type="number" min="0" step="0.25" value="0"></div>
+<div class="field"><label>Over 60 hours + night work (hours)</label><input id="o60n" type="number" min="0" step="0.25" value="0"></div>
+<div class="field"><label>Statutory holiday work (hours)</label><input id="h" type="number" min="0" step="0.25" value="0"></div>
+<div class="field"><label>Statutory holiday + night work (hours)</label><input id="hn" type="number" min="0" step="0.25" value="0"></div>
+</div>
+<button onclick="calc()">Calculate</button><div id="err" class="error"></div>
+<div id="res" class="result" hidden>
+<div class="box"><span>Overtime (25%)</span><strong id="a">-</strong></div>
+<div class="box"><span>Overtime + night (50%)</span><strong id="b">-</strong></div>
+<div class="box"><span>Over 60h (50%)</span><strong id="c">-</strong></div>
+<div class="box"><span>Over 60h + night (75%)</span><strong id="d">-</strong></div>
+<div class="box"><span>Statutory holiday (35%)</span><strong id="e">-</strong></div>
+<div class="box"><span>Statutory holiday + night (60%)</span><strong id="f">-</strong></div>
+<div class="box total"><span>Total premium pay</span><strong id="t">-</strong></div>
+</div>
+<p class="note">Note: This is an estimate based on Japan’s statutory minimum premium rates: overtime 25%, night work 25%, statutory holidays 35%, and overtime over 60 hours/month 50%. Premiums are added when categories overlap.<br>This calculator shows the pay amount including the applicable premium. Actual payroll may differ depending on the wage base, scheduled hours, company rules, and rounding.</p>
+</div></div>
+<script>
+function money(n){return Math.round(n).toLocaleString("ja-JP")+"JPY"}
+function num(id){return Number(document.getElementById(id).value)||0}
+function calc(){
+ const w=num("w"),o=num("o"),on=num("on"),o60=num("o60"),o60n=num("o60n"),h=num("h"),hn=num("hn");
+ const err=document.getElementById("err");err.textContent="";
+ if(w<=0||[o,on,o60,o60n,h,hn].some(x=>x<0)||on>o||o60n>o60||hn>h){err.textContent="Please check your inputs. Night hours cannot exceed the hours in each category.";document.getElementById("res").hidden=true;return}
+ const a=w*1.25*o,b=w*1.5*on,c=w*1.5*o60,d=w*1.75*o60n,e=w*1.35*h,f=w*1.6*hn,t=a+b+c+d+e+f;
+ [["a",a],["b",b],["c",c],["d",d],["e",e],["f",f],["t",t]].forEach(([id,v])=>document.getElementById(id).textContent=money(v));
+ document.getElementById("res").hidden=false;
+}
+</script></body></html>
