@@ -1,0 +1,17 @@
+*{box-sizing:border-box}
+body{margin:0;background:#f5f7f8;color:#263238;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Yu Gothic",sans-serif;line-height:1.7}
+.wrap{width:min(720px,calc(100% - 28px));margin:0 auto;padding:38px 0 50px}
+header{text-align:center;margin-bottom:24px}.eyebrow{margin:0 0 5px;font-size:12px;font-weight:700;letter-spacing:.12em;color:#607d8b}
+h1{margin:0;font-size:clamp(28px,7vw,42px);letter-spacing:-.03em}.lead{margin:12px auto 0;max-width:580px;color:#607078}
+.card,.result{background:#fff;border-radius:20px;padding:24px;box-shadow:0 5px 25px rgba(38,50,56,.07)}
+label{display:block;margin:0 0 8px;font-weight:700}textarea{width:100%;resize:vertical;border:1px solid #d5dde1;border-radius:12px;padding:13px;font:inherit;outline:none}
+textarea:focus{border-color:#78909c;box-shadow:0 0 0 3px rgba(120,144,156,.13)}
+.sizes{display:flex;gap:8px;margin:0 0 18px}.size{flex:1;padding:10px;border:1px solid #d5dde1;background:#fff;border-radius:10px;font:inherit;cursor:pointer}.size.active{background:#263238;color:#fff;border-color:#263238}
+.primary,.secondary,.copy{border:0;border-radius:12px;font:inherit;font-weight:700;cursor:pointer}.primary{width:100%;padding:14px;background:#263238;color:#fff;font-size:16px}
+.result{margin-top:18px}.result-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}h2{margin:0;font-size:22px}
+.copy{padding:8px 11px;background:#eef2f3;color:#37474f;font-size:13px}ol{list-style:none;padding:0;margin:18px 0}
+li{display:flex;gap:13px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #edf0f1}li:last-child{border-bottom:0}.num{flex:none;width:30px;height:30px;border-radius:50%;background:#263238;color:#fff;text-align:center;line-height:30px;font-weight:700}
+.step-title{font-weight:700}.step-detail{font-size:14px;color:#607078}.tip{margin:0 0 17px;padding:12px 14px;background:#f5f7f8;border-radius:10px;font-size:14px}
+.secondary{width:100%;padding:11px;background:#fff;border:1px solid #cfd8dc}.history{margin-top:18px}.history ul{list-style:none;margin:10px 0;padding:0}.history li{display:block;padding:9px 0;font-size:14px}.text-button{border:0;background:none;color:#607d8b;padding:0;cursor:pointer}
+footer{text-align:center;color:#90a0a6;font-size:12px;margin-top:20px}.hidden{display:none}
+@media(max-width:520px){.wrap{padding-top:25px}.card,.result{padding:19px}.result-head{display:block}.copy{margin-top:10px}.sizes{gap:6px}}
