@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSV行抽出・削除ツール</title>
+<meta name="description" content="CSVを貼り付けて、指定した行だけを抽出したり不要な行を削除したりできる無料ツールです。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+<h1>CSV行抽出・削除ツール</h1>
+<p class="lead">CSVを貼り付けて、必要な行だけを取り出したり不要な行を削除したりできます。</p>
+<section class="card">
+<label for="input">CSV</label>
+<textarea id="input" placeholder="名前,年齢,都道府県
+田中,35,東京都
+佐藤,28,神奈川県
+鈴木,42,埼玉県"></textarea>
+<label for="rows">対象の行番号</label>
+<input id="rows" type="text" placeholder="例：2,4">
+<p class="hint">1行目を1として数えます。複数指定は「2,4,7」、範囲は「2-5」と入力できます。</p>
+<div class="buttons">
+<button id="extract">指定行だけ残す</button>
+<button id="remove" class="secondary">指定行を削除</button>
+</div>
+</section>
+<section class="card result-card">
+<div class="result-head"><h2>結果</h2><button id="copy" class="small">コピー</button></div>
+<textarea id="output" readonly placeholder="ここに結果が表示されます"></textarea>
+</section>
+<section class="card guide">
+<h2>使い方</h2>
+<p>CSVを貼り付け、対象の行番号を入力してください。「2,4」や「2-5」のように指定できます。</p>
+<p>処理はブラウザ内で行います。入力したCSVを外部サーバーへ送信しません。</p>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
