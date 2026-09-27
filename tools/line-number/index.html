@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行番号追加ツール</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="container">
+<h1>行番号追加ツール</h1>
+<p class="lead">文章やコードの各行に、行番号を一括で追加できます。</p>
+
+<label for="input">入力</label>
+<textarea id="input" placeholder="1行目
+2行目
+3行目"></textarea>
+
+<div class="options">
+<label>開始番号
+<input id="start" type="number" value="1" min="0">
+</label>
+<label class="check"><input type="checkbox" id="blank"> 空行にも番号を付ける</label>
+</div>
+
+<button id="convert">行番号を付ける</button>
+
+<label for="output">結果</label>
+<textarea id="output" readonly></textarea>
+
+<div class="actions">
+<button id="copy" class="secondary">結果をコピー</button>
+<button id="clear" class="secondary">クリア</button>
+</div>
+<p id="status" class="status"></p>
+
+<section class="guide">
+<h2>使い方</h2>
+<ol>
+<li>文章やコードを入力します。</li>
+<li>必要なら開始番号を変更します。</li>
+<li>「行番号を付ける」を押します。</li>
+</ol>
+<p>入力内容はブラウザ内だけで処理され、サーバーへ送信されません。</p>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
