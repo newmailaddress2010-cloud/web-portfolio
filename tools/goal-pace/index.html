@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="目標値と現在値、期限から、1日あたりに必要なペースを計算する無料ツール。">
+<title>目標ペース計算機｜1日あたりあとどれくらい？</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+<header>
+<p class="eyebrow">FREE WEB TOOL</p>
+<h1>目標ペース計算機</h1>
+<p class="lead">目標と現在の進み具合、残り日数から「1日あたりあとどれくらい必要か」を計算します。</p>
+</header>
+
+<section class="card">
+<label>目標値
+<div class="input-row"><input id="goal" type="number" min="0" step="any" placeholder="例：100"></div>
+</label>
+<label>現在値
+<div class="input-row"><input id="current" type="number" min="0" step="any" placeholder="例：40"></div>
+</label>
+<label>残り日数
+<div class="input-row"><input id="days" type="number" min="1" step="1" placeholder="例：10"><span>日</span></div>
+</label>
+<button id="calc" class="primary">必要ペースを計算</button>
+</section>
+
+<section id="result" class="card hidden" aria-live="polite">
+<h2>計算結果</h2>
+<div class="result-grid">
+<div><span>残り</span><strong id="remaining">—</strong></div>
+<div><span>1日あたり必要</span><strong id="perDay">—</strong></div>
+<div><span>現在の達成率</span><strong id="rate">—</strong></div>
+</div>
+<p id="summary" class="summary"></p>
+<button id="copy" class="secondary">結果をコピー</button>
+</section>
+
+<section class="card info">
+<h2>こんなときに</h2>
+<ul>
+<li>目標件数まで、あと1日何件必要か知りたい</li>
+<li>今月の売上目標に、あと1日いくら必要か知りたい</li>
+<li>100ページの本を残り10日で終えるペースを知りたい</li>
+</ul>
+<p>計算式：残り＝目標値−現在値 ／ 1日あたり必要＝残り÷残り日数</p>
+<p>入力した数値はブラウザ内だけで計算され、外部へ送信されません。</p>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
