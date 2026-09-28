@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cash Balance Forecast Check | When Could Cash Run Short?</title>
+<style>
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:760px;margin:auto;padding:20px;background:#f6f7f9;color:#222;line-height:1.6}
+main{background:#fff;padding:24px;border-radius:14px;box-shadow:0 2px 12px #0001}h1{font-size:24px;margin-top:0}.lead{color:#555}
+label{display:block;margin-top:16px;font-weight:600}input{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+button{margin-top:20px;padding:12px 18px;border:0;border-radius:8px;background:#333;color:#fff;font-size:16px}.result{margin-top:22px;padding:18px;background:#f0f3f6;border-radius:10px}
+.big{font-size:30px;font-weight:700}.warn{margin-top:12px;font-weight:600}.ok{margin-top:12px;font-weight:600}.note{font-size:13px;color:#666;margin-top:16px}
+table{width:100%;border-collapse:collapse;margin-top:16px}th,td{padding:9px 6px;border-bottom:1px solid #ddd;text-align:right}th:first-child,td:first-child{text-align:left}
+</style></head><body><main>
+<h1>Cash Balance Forecast Check</h1>
+<p class="lead">Forecast your monthly cash balance from current cash, expected income, and planned expenses to see when cash could become tight.</p>
+<label>Current cash balance<input id="cash" type="number" min="0" value="200000"></label>
+<label>Expected monthly income<input id="income" type="number" min="0" value="150000"></label>
+<label>Monthly fixed expenses<input id="fixed" type="number" min="0" value="100000"></label>
+<label>Monthly variable expenses<input id="variable" type="number" min="0" value="30000"></label>
+<label>Monthly tax/emergency reserve<input id="reserve" type="number" min="0" value="10000"></label>
+<label>One-time expense<input id="oneoff" type="number" min="0" value="0"></label>
+<label>Month of one-time expense (months from now)<input id="oneoffMonth" type="number" min="1" step="1" value="3"></label>
+<label>Minimum cash you want to keep<input id="minimum" type="number" min="0" value="50000"></label>
+<label>Forecast period (months)<input id="months" type="number" min="1" max="36" step="1" value="12"></label>
+<button onclick="calc()">Forecast cash</button>
+<div id="result" class="result"></div>
+<p class="note">This is a simple cash-flow forecast. It does not model delayed receivables, changing tax rates, loan repayments, or other individual factors. Check your actual cash-in and cash-out schedule for financial management.</p>
+</main>
+<script>
+function n(id){return Number(document.getElementById(id).value)||0}
+function yen(x){return Math.round(x).toLocaleString("ja-JP")+"円"}
+function calc(){
+ const cash=n("cash"),income=n("income"),fixed=n("fixed"),variable=n("variable"),reserve=n("reserve"),oneoff=n("oneoff"),om=Math.floor(n("oneoffMonth")),minimum=n("minimum"),months=Math.min(36,Math.floor(n("months"))),r=document.getElementById("result");
+ if(cash<0||income<0||fixed<0||variable<0||reserve<0||oneoff<0||om<1||minimum<0||months<1){r.textContent="Please check your inputs.";return}
+ let bal=cash,minBal=cash,minMonth=0,rows="";
+ for(let m=1;m<=months;m++){
+  bal+=income-fixed-variable-reserve;
+  if(m===om) bal-=oneoff;
+  if(bal<minBal){minBal=bal;minMonth=m}
+  rows+="<tr><td>"+m+" months</td><td>"+yen(bal)+"</td><td>"+(bal<minimum?"Watch":"")+"</td></tr>";
+ }
+ let status=minBal<minimum?"<div class='warn'>Cash may fall below your minimum target. The lowest point is "+minMonth+" months from now.</div>":"<div class='ok'>Cash stays above your minimum target during the forecast period.</div>";
+ r.innerHTML="<div>Forecast period: "+months+" months</div><div class='big'>Lowest balance: "+yen(minBal)+"</div>"+status+
+ "<table><tr><th>時点</th><th>Forecast balance</th><th>Status</th></tr>"+rows+"</table>";
+}
+calc();
+</script></body></html>
