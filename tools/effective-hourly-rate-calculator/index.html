@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>実質時給計算機｜フリーランス・副業向け</title>
+<style>
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:720px;margin:auto;padding:20px;background:#f6f7f9;color:#222;line-height:1.6}main{background:#fff;padding:24px;border-radius:14px;box-shadow:0 2px 12px #0001}h1{font-size:24px;margin-top:0}.lead{color:#555}label{display:block;margin-top:16px;font-weight:600}input{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:8px;font-size:16px}button{margin-top:20px;padding:12px 18px;border:0;border-radius:8px;background:#333;color:#fff;font-size:16px}.result{margin-top:22px;padding:18px;background:#f0f3f6;border-radius:10px}.big{font-size:30px;font-weight:700}.note{font-size:13px;color:#666;margin-top:16px}
+</style></head><body><main>
+<h1>実質時給計算機</h1>
+<p class="lead">売上だけでなく、準備・連絡・修正・移動などの時間も含めて、本当の時給を計算します。</p>
+<label>受け取った報酬（円）<input id="pay" type="number" min="0" value="50000"></label>
+<label>実際の作業時間（時間）<input id="work" type="number" min="0" step="0.1" value="8"></label>
+<label>準備・連絡・修正などの時間（時間）<input id="admin" type="number" min="0" step="0.1" value="2"></label>
+<label>その他の時間（移動・待機など）（時間）<input id="other" type="number" min="0" step="0.1" value="1"></label>
+<label>経費（円）<input id="cost" type="number" min="0" value="3000"></label>
+<button onclick="calc()">計算する</button><div id="result" class="result"></div>
+<p class="note">実質時給＝（報酬－経費）÷実際にその案件のために使った総時間。税金・社会保険料は含めていません。</p>
+</main><script>
+function n(id){return Number(document.getElementById(id).value)||0}
+function yen(x){return Math.round(x).toLocaleString("ja-JP")+"円"}
+function calc(){const pay=n("pay"),t=n("work")+n("admin")+n("other"),cost=n("cost");if(t<=0){result.textContent="時間を入力してください。";return}const net=pay-cost;result.innerHTML="<div>実質時給</div><div class='big'>"+yen(net/t)+"</div><div>実質利益："+yen(net)+"</div><div>総時間："+t.toFixed(1)+"時間</div><div>経費率："+(pay?((cost/pay)*100).toFixed(1):0)+"%</div>"}
+calc();
+</script></body></html>
