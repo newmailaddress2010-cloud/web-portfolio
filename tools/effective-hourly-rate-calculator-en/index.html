@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Effective Hourly Rate Calculator</title>
+<style>
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:720px;margin:auto;padding:20px;background:#f6f7f9;color:#222;line-height:1.6}main{background:#fff;padding:24px;border-radius:14px;box-shadow:0 2px 12px #0001}h1{font-size:24px;margin-top:0}.lead{color:#555}label{display:block;margin-top:16px;font-weight:600}input{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:8px;font-size:16px}button{margin-top:20px;padding:12px 18px;border:0;border-radius:8px;background:#333;color:#fff;font-size:16px}.result{margin-top:22px;padding:18px;background:#f0f3f6;border-radius:10px}.big{font-size:30px;font-weight:700}.note{font-size:13px;color:#666;margin-top:16px}
+</style></head><body><main>
+<h1>Effective Hourly Rate Calculator</h1>
+<p class="lead">Include work, admin, communication, revisions, travel and other time to see what you really earn per hour.</p>
+<label>Payment received<input id="pay" type="number" min="0" value="500"></label>
+<label>Actual work hours<input id="work" type="number" min="0" step="0.1" value="8"></label>
+<label>Preparation, communication and revision hours<input id="admin" type="number" min="0" step="0.1" value="2"></label>
+<label>Other time (travel, waiting, etc.)<input id="other" type="number" min="0" step="0.1" value="1"></label>
+<label>Expenses<input id="cost" type="number" min="0" value="30"></label>
+<button onclick="calc()">Calculate</button><div id="result" class="result"></div>
+<p class="note">Effective hourly rate = (payment − expenses) ÷ total time spent on the project. Taxes and social insurance are not included.</p>
+</main><script>
+function n(id){return Number(document.getElementById(id).value)||0}
+function money(x){return Math.round(x).toLocaleString("en-US")}
+function calc(){const pay=n("pay"),t=n("work")+n("admin")+n("other"),cost=n("cost");if(t<=0){result.textContent="Please enter time.";return}const net=pay-cost;result.innerHTML="<div>Effective hourly rate</div><div class='big'>$"+money(net/t)+"</div><div>Net after expenses: $"+money(net)+"</div><div>Total time: "+t.toFixed(1)+" hours</div><div>Expense ratio: "+(pay?((cost/pay)*100).toFixed(1):0)+"%</div>"}
+calc();
+</script></body></html>
