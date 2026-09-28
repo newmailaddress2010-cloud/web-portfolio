@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Web納品チェックリストメーカー｜サイト公開前の確認</title>
+<style>
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:820px;margin:auto;padding:20px;background:#f6f7f9;color:#222;line-height:1.6}
+main{background:#fff;padding:24px;border-radius:14px;box-shadow:0 2px 12px #0001}h1{font-size:24px;margin-top:0}.lead{color:#555}
+select,input{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+label{display:block;margin-top:16px;font-weight:600}button{margin-top:20px;padding:12px 18px;border:0;border-radius:8px;background:#333;color:#fff;font-size:16px}
+.result{margin-top:22px;padding:18px;background:#f0f3f6;border-radius:10px}.item{padding:9px 0;border-bottom:1px solid #ddd}.item input{width:auto;margin-right:8px}.count{font-size:18px;font-weight:700;margin-bottom:10px}
+textarea{width:100%;box-sizing:border-box;min-height:180px;margin-top:14px;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:14px}.copy{background:#666;margin-left:8px}.note{font-size:13px;color:#666;margin-top:16px}
+</style></head><body><main>
+<h1>Web納品チェックリストメーカー</h1>
+<p class="lead">サイトの種類を選ぶと、公開・納品前に確認したい項目をまとめたチェックリストを作成します。</p>
+<label>サイトの種類
+<select id="type"><option value="company">会社サイト</option><option value="shop">店舗・サロン</option><option value="restaurant">飲食店</option><option value="portfolio">ポートフォリオ</option><option value="landing">LP・サービス紹介</option></select></label>
+<label>追加したい確認項目（任意）<input id="custom" type="text" placeholder="例：LINEリンク、予約フォーム"></label>
+<button onclick="makeList()">チェックリストを作る</button>
+<div id="result" class="result"></div>
+<button class="copy" onclick="copyList()">チェックリストをコピー</button>
+<p class="note">このツールは公開前確認の補助用です。サイトや契約内容によって必要な確認項目は異なります。</p>
+</main>
+<script>
+const common=[
+"全ページが正常に表示される","スマートフォン表示を確認する","主要ブラウザで表示を確認する",
+"内部リンクを確認する","外部リンクを確認する","画像が正しく表示される","画像のalt属性を確認する",
+"ページタイトルを確認する","meta descriptionを確認する","ファビコンを確認する",
+"問い合わせフォームを実際に送信する","フォームの通知メールを確認する","返信先メールアドレスを確認する",
+"電話番号・住所・営業時間などの基本情報を確認する","SNSリンクを確認する","SSL（https）で表示される",
+"404ページを確認する","不要なテスト文・ダミー画像を削除する","クライアント最終確認を受ける","公開後のバックアップを確保する"
+];
+const extra={
+company:["会社概要・代表情報を確認する","採用ページを確認する","プライバシーポリシーを確認する"],
+shop:["店舗住所・営業時間・定休日を確認する","予約方法を確認する","料金・メニューを確認する"],
+restaurant:["店舗住所・営業時間・定休日を確認する","メニュー・価格を確認する","予約・テイクアウト方法を確認する"],
+portfolio:["実績ページのリンクを確認する","作品画像・説明文を確認する","問い合わせ方法を確認する"],
+landing:["CTA・問い合わせ導線を確認する","料金・サービス内容を確認する","SNS広告などからの導線を確認する"]
+};
+let items=[];
+function makeList(){
+ const t=document.getElementById("type").value, custom=document.getElementById("custom").value.trim();
+ items=[...common,...extra[t]];
+ if(custom)items.push(custom);
+ const r=document.getElementById("result");
+ r.innerHTML="<div class='count'>0 / "+items.length+" 完了</div>"+items.map((x,i)=>"<div class='item'><label><input type='checkbox' onchange='update()'>"+x+"</label></div>").join("");
+ update();
+}
+function update(){
+ const boxes=document.querySelectorAll("#result input[type=checkbox]"),done=[...boxes].filter(x=>x.checked).length;
+ const count=document.querySelector(".count");if(count)count.textContent=done+" / "+boxes.length+" 完了";
+}
+function copyList(){
+ if(!items.length)return;
+ const boxes=document.querySelectorAll("#result input[type=checkbox]");
+ const text=items.map((x,i)=>(boxes[i]&&boxes[i].checked?"[x] ":"[ ] ")+x).join("\n");
+ navigator.clipboard.writeText(text).then(()=>alert("チェックリストをコピーしました。"));
+}
+makeList();
+</script></body></html>
