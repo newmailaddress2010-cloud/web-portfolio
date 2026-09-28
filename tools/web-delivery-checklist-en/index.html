@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Website Delivery Checklist Maker | Pre-Launch Check</title>
+<style>
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:820px;margin:auto;padding:20px;background:#f6f7f9;color:#222;line-height:1.6}
+main{background:#fff;padding:24px;border-radius:14px;box-shadow:0 2px 12px #0001}h1{font-size:24px;margin-top:0}.lead{color:#555}
+select,input{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+label{display:block;margin-top:16px;font-weight:600}button{margin-top:20px;padding:12px 18px;border:0;border-radius:8px;background:#333;color:#fff;font-size:16px}
+.result{margin-top:22px;padding:18px;background:#f0f3f6;border-radius:10px}.item{padding:9px 0;border-bottom:1px solid #ddd}.item input{width:auto;margin-right:8px}.count{font-size:18px;font-weight:700;margin-bottom:10px}
+textarea{width:100%;box-sizing:border-box;min-height:180px;margin-top:14px;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:14px}.copy{background:#666;margin-left:8px}.note{font-size:13px;color:#666;margin-top:16px}
+</style></head><body><main>
+<h1>Website Delivery Checklist Maker</h1>
+<p class="lead">Choose a website type to generate a practical checklist for launch and delivery.</p>
+<label>Website type
+<select id="type"><option value="company">Business website</option><option value="shop">Shop / Salon</option><option value="restaurant">Restaurant</option><option value="portfolio">Portfolio</option><option value="landing">Landing page / Service</option></select></label>
+<label>Additional check item (optional)<input id="custom" type="text" placeholder="e.g. booking form, social link"></label>
+<button onclick="makeList()">Create checklist</button>
+<div id="result" class="result"></div>
+<button class="copy" onclick="copyList()">Copy checklist</button>
+<p class="note">This tool is a pre-launch checklist aid. Required checks vary by website and contract.</p>
+</main>
+<script>
+const common=[
+"All pages display correctly","Check mobile display","Check major browsers",
+"Check internal links","Check external links","Check that images display correctly","Check image alt text",
+"Check page titles","Check meta descriptions","Check favicon",
+"Test the contact form","Check form notification email","Check reply-to email address",
+"Check basic information such as phone, address, and hours","Check social links","Confirm the site uses HTTPS",
+"Check the 404 page","Remove test text and placeholder images","Get final client approval","Keep a post-launch backup"
+];
+const extra={
+company:["Check company profile and representative information","Check careers page","Check privacy policy"],
+shop:["Check address, hours, and regular holidays","Check booking method","Check prices and menu"],
+restaurant:["店舗住所・営業時間・定休日を確認する","Check menu and prices","Check reservation and takeout methods"],
+portfolio:["Check portfolio links","Check project images and descriptions","Check contact method"],
+landing:["Check CTA and contact paths","Check pricing and service details","Check paths from social ads and other campaigns"]
+};
+let items=[];
+function makeList(){
+ const t=document.getElementById("type").value, custom=document.getElementById("custom").value.trim();
+ items=[...common,...extra[t]];
+ if(custom)items.push(custom);
+ const r=document.getElementById("result");
+ r.innerHTML="<div class='count'>0 / "+items.length+" complete</div>"+items.map((x,i)=>"<div class='item'><label><input type='checkbox' onchange='update()'>"+x+"</label></div>").join("");
+ update();
+}
+function update(){
+ const boxes=document.querySelectorAll("#result input[type=checkbox]"),done=[...boxes].filter(x=>x.checked).length;
+ const count=document.querySelector(".count");if(count)count.textContent=done+" / "+boxes.length+" 完了";
+}
+function copyList(){
+ if(!items.length)return;
+ const boxes=document.querySelectorAll("#result input[type=checkbox]");
+ const text=items.map((x,i)=>(boxes[i]&&boxes[i].checked?"[x] ":"[ ] ")+x).join("\n");
+ navigator.clipboard.writeText(text).then(()=>alert("Checklist copied."));
+}
+makeList();
+</script></body></html>
