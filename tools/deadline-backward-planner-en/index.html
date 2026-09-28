@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deadline Backward Planner | Daily Workload Calculator</title>
+<style>
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:760px;margin:auto;padding:20px;background:#f6f7f9;color:#222;line-height:1.6}
+main{background:#fff;padding:24px;border-radius:14px;box-shadow:0 2px 12px #0001}h1{font-size:24px;margin-top:0}.lead{color:#555}
+label{display:block;margin-top:16px;font-weight:600}input{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+button{margin-top:20px;padding:12px 18px;border:0;border-radius:8px;background:#333;color:#fff;font-size:16px}.result{margin-top:22px;padding:18px;background:#f0f3f6;border-radius:10px}
+.big{font-size:30px;font-weight:700}.warn{margin-top:12px;font-weight:600}.ok{margin-top:12px;font-weight:600}.note{font-size:13px;color:#666;margin-top:16px}.row{margin-top:8px}
+</style></head><body><main>
+<h1>Deadline Backward Planner</h1>
+<p class="lead">Work backward from your delivery date to see the daily hours you need and whether a buffer fits.</p>
+<label>Start date<input id="start" type="date"></label>
+<label>Delivery date<input id="deadline" type="date"></label>
+<label>Remaining work hours<input id="hours" type="number" min="0" step="0.5" value="20"></label>
+<label>Available work hours per day<input id="daily" type="number" min="0.1" step="0.5" value="4"></label>
+<label>Days unavailable for work<input id="off" type="number" min="0" step="1" value="0"></label>
+<label>Buffer (%)<input id="buffer" type="number" min="0" step="5" value="20"></label>
+<button onclick="calc()">Plan</button>
+<div id="result" class="result"></div>
+<p class="note">Dates are calculated by calendar day. Work-hour estimates depend on your assumptions, so actual speed, urgent requests, and revisions may change the result.</p>
+</main>
+<script>
+function n(id){return Number(document.getElementById(id).value)||0}
+function d(id){return new Date(document.getElementById(id).value+"T00:00:00")}
+function fmt(x){return x.toLocaleString("ja-JP",{maximumFractionDigits:1})}
+function calc(){
+ const s=document.getElementById("start").value,e=document.getElementById("deadline").value,h=n("hours"),daily=n("daily"),off=n("off"),buf=n("buffer"),r=document.getElementById("result");
+ if(!s||!e||d("deadline")<d("start")||h<0||daily<=0||off<0||buf<0){r.textContent="Please check your inputs.";return}
+ const days=Math.floor((d("deadline")-d("start"))/86400000)+1;
+ const workDays=Math.max(days-off,0);
+ const needed=h*(1+buf/100);
+ const perDay=workDays>0?needed/workDays:Infinity;
+ const rawDays=Math.ceil(h/daily);
+ const bufferedDays=Math.ceil(needed/daily);
+ const rawEnd=new Date(d("start")); rawEnd.setDate(rawEnd.getDate()+Math.max(rawDays-1,0));
+ const bufEnd=new Date(d("start")); bufEnd.setDate(bufEnd.getDate()+Math.max(bufferedDays-1,0));
+ const date=x=>x.toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric"});
+ let html="<div>Calendar days until deadline: "+days+"日</div><div>Available workdays: "+workDays+"日</div>";
+ html+="<div>Required work including buffer: "+fmt(needed)+"hours</div>";
+ html+="<div class='big'>Required average work time: "+(isFinite(perDay)?fmt(perDay):"計算不可")+"hours/day</div>";
+ html+="<div class='row'>At the current pace ("+fmt(daily)+"hours/day): "+rawDays+" days → "+date(rawEnd)+"</div>";
+ html+="<div class='row'>With buffer: "+bufferedDays+"日 → "+date(bufEnd)+"</div>";
+ if(bufferedDays>workDays) html+="<div class='warn'>At this pace, the deadline may not be met after allowing for the buffer. Consider increasing work time or revising the workload or deadline.</div>";
+ else html+="<div class='ok'>The plan fits within the available workdays even with the buffer.</div>";
+ r.innerHTML=html;
+}
+document.getElementById("start").value=new Date().toISOString().slice(0,10);
+const x=new Date();x.setDate(x.getDate()+14);document.getElementById("deadline").value=x.toISOString().slice(0,10);
+calc();
+</script></body></html>
