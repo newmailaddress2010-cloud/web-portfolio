@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>平均単価計算機</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:#f5f7fb;color:#1f2937}.wrap{max-width:620px;margin:auto;padding:24px 16px}.card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 18px #0001}h1{font-size:24px}.lead{color:#64748b;line-height:1.6}.field{margin:16px 0}label{display:block;font-weight:700;margin-bottom:6px}input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px}button{width:100%;padding:13px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-size:16px;font-weight:700}.result{margin-top:18px;padding:18px;background:#f8fafc;border-radius:12px}.row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #e5e7eb}.row:last-child{border:0}.err{color:#dc2626;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card">
+<h1>平均単価計算機</h1>
+<p class="lead">売上金額と販売数量から平均単価を計算します。</p>
+<div class="field"><label>売上金額（円）</label><input id="sales" type="number" min="0" step="any" placeholder="100000"></div>
+<div class="field"><label>販売数量</label><input id="qty" type="number" min="0" step="any" placeholder="100"></div>
+<button onclick="calc()">計算する</button>
+<div id="err" class="err"></div>
+<div id="res" class="result" hidden>
+<div class="row"><span>平均単価</span><strong id="unit"></strong></div>
+<div class="row"><span>売上金額</span><span id="salesOut"></span></div>
+<div class="row"><span>販売数量</span><span id="qtyOut"></span></div>
+</div>
+</div></div>
+<script>
+function calc(){
+ const s=Number(document.getElementById('sales').value),q=Number(document.getElementById('qty').value);
+ const err=document.getElementById('err'),res=document.getElementById('res');
+ if(!Number.isFinite(s)||!Number.isFinite(q)||s<0||q<=0){err.textContent='売上金額は0以上、販売数量は1以上で入力してください。';res.hidden=true;return}
+ err.textContent='';res.hidden=false;
+ document.getElementById('unit').textContent=(s/q).toLocaleString('ja-JP',{maximumFractionDigits:2})+' 円';
+ document.getElementById('salesOut').textContent=s.toLocaleString('ja-JP')+' 円';
+ document.getElementById('qtyOut').textContent=q.toLocaleString('ja-JP');
+}
+</script>
+</body></html>
