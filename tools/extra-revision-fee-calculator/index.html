@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>追加修正料金計算機｜追加依頼の費用と納期を確認</title>
+<style>
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:720px;margin:auto;padding:20px;background:#f6f7f9;color:#222;line-height:1.6}main{background:#fff;padding:24px;border-radius:14px;box-shadow:0 2px 12px #0001}h1{font-size:24px;margin-top:0}.lead{color:#555}label{display:block;margin-top:16px;font-weight:600}input{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:8px;font-size:16px}button{margin-top:20px;padding:12px 18px;border:0;border-radius:8px;background:#333;color:#fff;font-size:16px}.result{margin-top:22px;padding:18px;background:#f0f3f6;border-radius:10px}.big{font-size:30px;font-weight:700}.warn{margin-top:12px;font-weight:600}.ok{margin-top:12px;font-weight:600}.note{font-size:13px;color:#666;margin-top:16px}.copy{margin-left:8px;background:#666}
+</style></head>
+<body><main>
+<h1>追加修正料金計算機</h1>
+<p class="lead">「この追加修正、いくら請求する？」を、追加工数と目標時給から逆算します。</p>
+<label>現在の案件料金（円）<input id="fee" type="number" min="0" value="50000"></label>
+<label>これまでに使った時間（時間）<input id="used" type="number" min="0" step="0.1" value="8"></label>
+<label>追加作業に必要な時間（時間）<input id="extra" type="number" min="0" step="0.1" value="3"></label>
+<label>目標とする実質時給（円）<input id="rate" type="number" min="0" value="3000"></label>
+<label>追加作業後の納期までの日数（任意）<input id="days" type="number" min="0" step="0.5" value="2"></label>
+<button onclick="calc()">計算する</button>
+<div id="result" class="result"></div>
+<p class="note">追加料金の目安＝追加作業時間×目標実質時給。契約内容、税金、手数料、案件ごとの価値などは含めていません。実際の請求額は契約条件を確認して決めてください。</p>
+</main>
+<script>
+function n(id){return Number(document.getElementById(id).value)||0}
+function yen(x){return Math.round(x).toLocaleString("ja-JP")+"円"}
+function calc(){
+ const fee=n("fee"),used=n("used"),extra=n("extra"),rate=n("rate"),days=n("days"),r=document.getElementById("result");
+ if(fee<0||used<0||extra<0||rate<=0||days<0){r.textContent="入力値を確認してください。";return}
+ const current=used>0?fee/used:0, add=extra*rate, total=fee+add, totalHours=used+extra, after=totalHours>0?total/totalHours:0;
+ let html="<div>追加料金の目安</div><div class='big'>"+yen(add)+"</div>";
+ html+="<div>追加後の案件料金："+yen(total)+"</div>";
+ html+="<div>追加後の実質時給："+yen(after)+"</div>";
+ if(days>0){const extraPerDay=extra/days;html+="<div>追加作業ペース："+extraPerDay.toFixed(1)+"時間/日</div>"}
+ html+=current<rate?"<div class='warn'>現在の案件も、すでに目標時給を下回っています。追加作業を無償で受けると、さらに実質時給が下がります。</div>":"<div class='ok'>追加作業を無償で受ける前に、追加料金と納期への影響を確認できます。</div>";
+ r.innerHTML=html;
+}
+calc();
+</script></body></html>
