@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Extra Revision Fee Calculator | Estimate Additional Project Cost</title>
+<style>
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:720px;margin:auto;padding:20px;background:#f6f7f9;color:#222;line-height:1.6}main{background:#fff;padding:24px;border-radius:14px;box-shadow:0 2px 12px #0001}h1{font-size:24px;margin-top:0}.lead{color:#555}label{display:block;margin-top:16px;font-weight:600}input{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:8px;font-size:16px}button{margin-top:20px;padding:12px 18px;border:0;border-radius:8px;background:#333;color:#fff;font-size:16px}.result{margin-top:22px;padding:18px;background:#f0f3f6;border-radius:10px}.big{font-size:30px;font-weight:700}.warn{margin-top:12px;font-weight:600}.ok{margin-top:12px;font-weight:600}.note{font-size:13px;color:#666;margin-top:16px}.copy{margin-left:8px;background:#666}
+</style></head>
+<body><main>
+<h1>Extra Revision Fee Calculator</h1>
+<p class="lead">Estimate a fair additional fee from the extra work and your target hourly rate.</p>
+<label>Current project fee<input id="fee" type="number" min="0" value="50000"></label>
+<label>Hours already spent<input id="used" type="number" min="0" step="0.1" value="8"></label>
+<label>Additional work hours<input id="extra" type="number" min="0" step="0.1" value="3"></label>
+<label>Target effective hourly rate<input id="rate" type="number" min="0" value="3000"></label>
+<label>Days remaining after the additional work (optional)<input id="days" type="number" min="0" step="0.5" value="2"></label>
+<button onclick="calc()">Calculate</button>
+<div id="result" class="result"></div>
+<p class="note">Estimated additional fee＝追加作業時間×目標実質時給。契約内容、税金、手数料、案件ごとの価値などは含めていません。実際の請求額は契約条件を確認して決めてください。</p>
+</main>
+<script>
+function n(id){return Number(document.getElementById(id).value)||0}
+function yen(x){return Math.round(x).toLocaleString("ja-JP")+"円"}
+function calc(){
+ const fee=n("fee"),used=n("used"),extra=n("extra"),rate=n("rate"),days=n("days"),r=document.getElementById("result");
+ if(fee<0||used<0||extra<0||rate<=0||days<0){r.textContent="Please check your inputs.";return}
+ const current=used>0?fee/used:0, add=extra*rate, total=fee+add, totalHours=used+extra, after=totalHours>0?total/totalHours:0;
+ let html="<div>追加料金の目安</div><div class='big'>"+yen(add)+"</div>";
+ html+="<div>Project fee after addition: "+yen(total)+"</div>";
+ html+="<div>Effective hourly rate after addition: "+yen(after)+"</div>";
+ if(days>0){const extraPerDay=extra/days;html+="<div>Additional work pace: "+extraPerDay.toFixed(1)+"hours/day</div>"}
+ html+=current<rate?"<div class='warn'>The current project is already below your target hourly rate. Accepting extra work for free would lower it further.</div>":"<div class='ok'>Check the fee and workload impact before accepting extra work for free.</div>";
+ r.innerHTML=html;
+}
+calc();
+</script></body></html>
