@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Work Capacity Checker | Can You Take Another Project?</title>
+<style>
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:760px;margin:auto;padding:20px;background:#f6f7f9;color:#222;line-height:1.6}
+main{background:#fff;padding:24px;border-radius:14px;box-shadow:0 2px 12px #0001}h1{font-size:24px;margin-top:0}.lead{color:#555}
+label{display:block;margin-top:16px;font-weight:600}input{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+button{margin-top:20px;padding:12px 18px;border:0;border-radius:8px;background:#333;color:#fff;font-size:16px}.result{margin-top:22px;padding:18px;background:#f0f3f6;border-radius:10px}
+.big{font-size:30px;font-weight:700}.warn{margin-top:12px;font-weight:600}.ok{margin-top:12px;font-weight:600}.note{font-size:13px;color:#666;margin-top:16px}
+</style></head><body><main>
+<h1>Work Capacity Checker</h1>
+<p class="lead">Check whether a new project fits within your available work hours while preserving a buffer.</p>
+<label>Available work hours per day<input id="daily" type="number" min="0.1" step="0.5" value="6"></label>
+<label>Planning period (days)<input id="days" type="number" min="1" step="1" value="5"></label>
+<label>Remaining hours for current projects<input id="current" type="number" min="0" step="0.5" value="18"></label>
+<label>Work hours for the new project<input id="newwork" type="number" min="0" step="0.5" value="8"></label>
+<label>Communication and meeting hours<input id="communication" type="number" min="0" step="0.5" value="3"></label>
+<label>Revision and review hours<input id="revision" type="number" min="0" step="0.5" value="3"></label>
+<label>Desired buffer (%)<input id="buffer" type="number" min="0" step="5" value="20"></label>
+<button onclick="calc()">Check capacity</button>
+<div id="result" class="result"></div>
+<p class="note">Work hours are estimates. Unexpected requests, interruptions, and other factors are not included, so leave additional room when making real deadline decisions.</p>
+</main>
+<script>
+function n(id){return Number(document.getElementById(id).value)||0}
+function fmt(x){return x.toLocaleString("ja-JP",{maximumFractionDigits:1})}
+function calc(){
+ const daily=n("daily"),days=Math.floor(n("days")),current=n("current"),nw=n("newwork"),com=n("communication"),rev=n("revision"),buf=n("buffer"),r=document.getElementById("result");
+ if(daily<=0||days<1||current<0||nw<0||com<0||rev<0||buf<0){r.textContent="Please check your inputs.";return}
+ const capacity=daily*days;
+ const work=current+nw+com+rev;
+ const required=work*(1+buf/100);
+ const free=capacity-required;
+ const utilization=required/capacity*100;
+ const withoutNew=current+com+rev;
+ const maxNew=Math.max(0,capacity/(1+buf/100)-withoutNew);
+ let html="<div>Available capacity: "+fmt(capacity)+" hours</div>";
+ html+="<div>Current work + new project + communication/revisions: "+fmt(work)+"時間</div>";
+ html+="<div>Required hours including buffer: "+fmt(required)+"時間</div>";
+ html+="<div class='big'>Capacity used: "+fmt(utilization)+"%</div>";
+ html+="<div>Available hours for a new project while keeping the buffer: "+fmt(maxNew)+"時間</div>";
+ if(free<0) html+="<div class='warn'>You are over capacity under these conditions. Consider reducing the new project workload, extending the deadline, or increasing available work hours.</div>";
+ else if(utilization>=90) html+="<div class='warn'>There is very little spare capacity. Even small additional tasks could affect the deadline.</div>";
+ else html+="<div class='ok'>The plan fits within your available capacity even with the buffer.</div>";
+ r.innerHTML=html;
+}
+calc();
+</script></body></html>
