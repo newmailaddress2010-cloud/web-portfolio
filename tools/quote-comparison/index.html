@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="複数の見積もりを入力して、料金・納期・条件を一覧で比較できる無料ツールです。">
+<title>見積もり比較表メーカー</title>
+<style>
+:root{color-scheme:light;--ink:#243044;--muted:#657287;--line:#dce3ec;--main:#315ea8;--bg:#f3f6fa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.6}
+main{width:min(100% - 28px,900px);margin:32px auto}
+header{margin-bottom:22px}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);line-height:1.3;margin:0 0 10px}
+p{margin:8px 0;color:var(--muted)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:clamp(16px,3vw,26px);margin:16px 0;box-shadow:0 5px 20px #24304408}
+h2{font-size:1.15rem;margin:0 0 14px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+label{display:block;font-weight:650;font-size:.92rem;margin-bottom:6px}
+input,textarea,select{font:inherit;width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:var(--ink)}
+textarea{resize:vertical;min-height:76px}
+.field{min-width:0}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+button{font:inherit;font-weight:650;border:0;border-radius:9px;padding:11px 16px;cursor:pointer;background:var(--main);color:white}
+button.secondary{background:#e9eef6;color:var(--ink)}
+button.danger{background:#fff0f0;color:#a22}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #a9c7ff;outline-offset:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.quote{border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}
+.quote h3{margin:0 0 12px;font-size:1rem}
+.quote .field{margin-top:10px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f6f8fb;white-space:nowrap}
+td:first-child{font-weight:650}
+.price{font-weight:750;white-space:nowrap}
+.note{font-size:.88rem}
+.empty{padding:18px;text-align:center;color:var(--muted);background:#f8fafc;border-radius:10px}
+footer{text-align:center;font-size:.85rem;color:var(--muted);padding:12px 0 28px}
+@media(max-width:600px){main{margin:20px auto}.form-grid{grid-template-columns:1fr}.actions button{flex:1 1 100%}.panel{border-radius:12px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>見積もり比較表メーカー</h1>
+<p>複数の見積もりを入力して、料金・納期・条件をまとめて比較できます。入力内容はこの画面内だけで処理されます。</p>
+</header>
+
+<section class="panel">
+<h2>比較する見積もり</h2>
+<div class="form-grid">
+<div class="field"><label for="project">案件・購入品の名前（任意）</label><input id="project" placeholder="例：ホームページ制作"></div>
+<div class="field"><label for="sort">並び順</label><select id="sort"><option value="price">料金が安い順</option><option value="days">納期が短い順</option><option value="input">入力した順</option></select></div>
+</div>
+<div id="quotes" class="cards" style="margin-top:16px"></div>
+<div class="actions">
+<button type="button" id="add">＋ 比較先を追加</button>
+<button type="button" id="compare">比較表を作成</button>
+<button type="button" class="secondary" id="clear">入力をクリア</button>
+</div>
+<p class="note">比較先は最大5件まで追加できます。料金・納期が不明な場合は空欄でも構いません。</p>
+</section>
+
+<section class="panel" id="resultPanel" hidden>
+<h2>比較結果</h2>
+<p id="summary"></p>
+<div class="table-wrap" id="tableWrap"></div>
+<div class="actions">
+<button type="button" id="copy">比較表をコピー</button>
+<button type="button" class="secondary" id="download">CSVをダウンロード</button>
+</div>
+<p class="note">料金や納期だけでなく、作業範囲・追加料金・保証などの条件も確認して選びましょう。</p>
+</section>
+<footer>見積もり比較表メーカー｜無料ツール</footer>
+</main>
+<script>
+const container=document.getElementById('quotes');
+let nextId=0;
+function addQuote(values={}){
+  if(container.children.length>=5){alert('比較先は最大5件です。');return;}
+  const id=++nextId;
+  const card=document.createElement('div');card.className='quote';card.dataset.id=id;
+  card.innerHTML=`
+    <h3>比較先 ${container.children.length+1}</h3>
+    <div class="field"><label for="name-${id}">会社名・商品名</label><input id="name-${id}" data-key="name" placeholder="例：A社" maxlength="80"></div>
+    <div class="field"><label for="price-${id}">見積もり金額（円）</label><input id="price-${id}" data-key="price" type="number" min="0" step="1" placeholder="例：100000"></div>
+    <div class="field"><label for="days-${id}">納期（日）</label><input id="days-${id}" data-key="days" type="number" min="0" step="1" placeholder="例：14"></div>
+    <div class="field"><label for="notes-${id}">条件・メモ</label><textarea id="notes-${id}" data-key="notes" placeholder="作業範囲、追加料金、保証など"></textarea></div>
+    <div class="actions"><button type="button" class="danger remove">この比較先を削除</button></div>`;
+  for(const key of ['name','price','days','notes']) if(values[key]!==undefined) card.querySelector('[data-key="'+key+'"]').value=values[key];
+  card.querySelector('.remove').addEventListener('click',()=>{if(container.children.length<=2){alert('比較には最低2件の入力欄を残してください。');return;}card.remove();renumber();});
+  container.appendChild(card);renumber();
+}
+function renumber(){[...container.children].forEach((card,i)=>card.querySelector('h3').textContent='比較先 '+(i+1));}
+function readQuotes(){
+ return [...container.children].map((card,i)=>{
+  const val=k=>card.querySelector('[data-key="'+k+'"]').value.trim();
+  const priceRaw=val('price'),daysRaw=val('days');
+  return {name:val('name')||'比較先 '+(i+1),price:priceRaw===''?null:Number(priceRaw),days:daysRaw===''?null:Number(daysRaw),notes:val('notes'),order:i};
+ });
+}
+function yen(n){return n===null?'未入力':Math.round(n).toLocaleString('ja-JP')+'円';}
+function compare(){
+ const rows=readQuotes();
+ if(rows.some(x=>x.price!==null&&(!Number.isFinite(x.price)||x.price<0))||rows.some(x=>x.days!==null&&(!Number.isFinite(x.days)||x.days<0))){alert('料金と納期は0以上の数値で入力してください。');return;}
+ const mode=document.getElementById('sort').value;
+ rows.sort((a,b)=>mode==='price'?(a.price??Infinity)-(b.price??Infinity)||a.order-b.order:mode==='days'?(a.days??Infinity)-(b.days??Infinity)||a.order-b.order:a.order-b.order);
+ const priced=rows.filter(x=>x.price!==null);
+ const cheapest=priced.length?Math.min(...priced.map(x=>x.price)):null;
+ document.getElementById('summary').textContent=cheapest===null?'料金が入力されていません。':('最安値は'+yen(cheapest)+'です。金額以外の条件も合わせて確認してください。');
+ const table=document.createElement('table');
+ table.innerHTML='<thead><tr><th>比較先</th><th>料金</th><th>納期</th><th>条件・メモ</th></tr></thead>';
+ const tbody=document.createElement('tbody');
+ rows.forEach(x=>{
+  const tr=document.createElement('tr');
+  const vals=[x.name,yen(x.price),x.days===null?'未入力':x.days.toLocaleString('ja-JP')+'日',x.notes||'—'];
+  vals.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;if(i===1){td.className='price';if(x.price===cheapest&&cheapest!==null)td.textContent+='（最安）';}tr.appendChild(td);});
+  tbody.appendChild(tr);
+ });
+ table.appendChild(tbody);const wrap=document.getElementById('tableWrap');wrap.replaceChildren(table);
+ document.getElementById('resultPanel').hidden=false;
+ window.comparisonRows=rows;
+}
+function csvEscape(v){return '"'+String(v??'').replace(/"/g,'""')+'"';}
+function csvText(){const rows=window.comparisonRows||[];return '\uFEFF'+[['比較先','料金（円）','納期（日）','条件・メモ'],...rows.map(x=>[x.name,x.price??'',x.days??'',x.notes])].map(r=>r.map(csvEscape).join(',')).join('\r\n');}
+document.getElementById('add').addEventListener('click',()=>addQuote());
+document.getElementById('compare').addEventListener('click',compare);
+document.getElementById('clear').addEventListener('click',()=>{container.replaceChildren();nextId=0;addQuote();addQuote();document.getElementById('project').value='';document.getElementById('resultPanel').hidden=true;});
+document.getElementById('sort').addEventListener('change',()=>{if(!document.getElementById('resultPanel').hidden)compare();});
+document.getElementById('copy').addEventListener('click',async()=>{
+ const rows=window.comparisonRows||[];if(!rows.length)return;
+ const text=[['比較先','料金','納期','条件・メモ'],...rows.map(x=>[x.name,x.price===null?'未入力':yen(x.price),x.days===null?'未入力':x.days+'日',x.notes||'—'])].map(r=>r.join('\t')).join('\n');
+ try{await navigator.clipboard.writeText(text);alert('比較表をコピーしました。');}catch(e){alert('コピーできませんでした。CSVダウンロードをご利用ください。');}
+});
+document.getElementById('download').addEventListener('click',()=>{
+ if(!window.comparisonRows?.length){alert('先に比較表を作成してください。');return;}
+ const blob=new Blob([csvText()],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='見積もり比較表.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+});
+addQuote();addQuote();
+</script>
+</body>
+</html>
