@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="複数の作業を入力して、作業時間の合計や見積もり時間、予備時間を計算できる無料ツールです。">
+<title>作業時間見積もり計算機</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#243044;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.65}
+main{width:min(100% - 28px,900px);margin:30px auto}h1{font-size:clamp(1.6rem,4vw,2.2rem);line-height:1.3;margin:0 0 10px}h2{font-size:1.15rem;margin:0 0 14px}p{color:#657287;margin:8px 0}
+.panel{background:#fff;border:1px solid #dce3ec;border-radius:15px;padding:clamp(16px,3vw,25px);margin:16px 0;box-shadow:0 5px 20px #24304408}
+.row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(90px,.7fr) minmax(90px,.7fr) auto;gap:10px;align-items:end;border-bottom:1px solid #e7ebf1;padding:13px 0}
+label{display:block;font-weight:650;font-size:.9rem;margin-bottom:5px}input,select{width:100%;min-width:0;padding:10px 11px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:white;color:inherit}
+button{font:inherit;font-weight:650;border:0;border-radius:9px;padding:11px 15px;cursor:pointer;background:#315ea8;color:white}button.secondary{background:#e9eef6;color:#243044}button.remove{background:#fff0f0;color:#a22;padding:10px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.stat{background:#f6f8fb;border:1px solid #e2e8f0;border-radius:11px;padding:15px;min-width:0}.stat span{display:block;color:#657287;font-size:.88rem}.stat strong{display:block;font-size:clamp(1.15rem,3vw,1.65rem);overflow-wrap:anywhere;margin-top:5px}
+.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{min-width:0}.note{font-size:.88rem}footer{text-align:center;color:#657287;font-size:.85rem;padding:10px 0 26px}
+@media(max-width:620px){main{margin:20px auto}.row{grid-template-columns:1fr 1fr}.row .task{grid-column:1/-1}.row .remove-wrap{grid-column:1/-1}.row button{width:100%}.stats{grid-template-columns:1fr}.settings{grid-template-columns:1fr}.actions button{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>作業時間見積もり計算機</h1>
+<p>作業を細かく分けて、それぞれの所要時間と回数を入力すると、合計時間や予備時間込みの見積もりを計算できます。仕事の段取りや制作スケジュールにご利用ください。</p>
+</header>
+<section class="panel">
+<h2>作業リスト</h2>
+<div id="tasks"></div>
+<div class="actions">
+<button type="button" id="add">＋ 作業を追加</button>
+<button type="button" class="secondary" id="example">入力例を入れる</button>
+<button type="button" class="secondary" id="reset">クリア</button>
+</div>
+<p class="note">各作業の「時間」は1回あたりの所要時間、「回数」は繰り返す回数です。時間は分単位で入力してください。</p>
+</section>
+<section class="panel">
+<h2>見積もり条件</h2>
+<div class="settings">
+<div class="field"><label for="buffer">予備時間（%）</label><input id="buffer" type="number" min="0" max="500" value="15" step="1"></div>
+<div class="field"><label for="dayLength">1日の作業時間（時間）</label><input id="dayLength" type="number" min="0.25" max="24" value="6" step="0.25"></div>
+</div>
+</section>
+<section class="panel">
+<h2>計算結果</h2>
+<div class="stats">
+<div class="stat"><span>作業時間の合計</span><strong id="base">0時間</strong></div>
+<div class="stat"><span>予備時間</span><strong id="bufferTime">0時間</strong></div>
+<div class="stat"><span>予備時間込み</span><strong id="total">0時間</strong></div>
+<div class="stat"><span>作業日数の目安</span><strong id="days">0日</strong></div>
+<div class="stat"><span>作業項目数</span><strong id="count">0件</strong></div>
+<div class="stat"><span>合計分数</span><strong id="minutes">0分</strong></div>
+</div>
+<p class="note" id="explain">入力した時間をもとにした目安です。休憩、待ち時間、作業の中断は含まれません。</p>
+<div class="actions"><button type="button" id="download">作業リストをCSV保存</button></div>
+</section>
+<footer>作業時間見積もり計算機｜無料ツール</footer>
+</main>
+<script>
+const list=document.getElementById('tasks');let serial=0;
+function addTask(v={}){
+ if(list.children.length>=30){alert('作業項目は最大30件です。');return;}
+ const id=++serial,el=document.createElement('div');el.className='row';
+ el.innerHTML=`
+ <div class="field task"><label for="task${id}">作業内容</label><input id="task${id}" data-k="name" maxlength="100" placeholder="例：原稿の確認"></div>
+ <div class="field"><label for="min${id}">時間（分）</label><input id="min${id}" data-k="minutes" type="number" min="0" step="1" placeholder="例：30"></div>
+ <div class="field"><label for="qty${id}">回数</label><input id="qty${id}" data-k="qty" type="number" min="0" step="1" value="1"></div>
+ <div class="remove-wrap"><button type="button" class="remove">削除</button></div>`;
+ for(const k of ['name','minutes','qty'])if(v[k]!==undefined)el.querySelector('[data-k="'+k+'"]').value=v[k];
+ el.querySelectorAll('input').forEach(input=>input.addEventListener('input',calculate));
+ el.querySelector('.remove').addEventListener('click',()=>{el.remove();if(!list.children.length)addTask();renumber();calculate();});
+ list.appendChild(el);renumber();calculate();
+}
+function renumber(){[...list.children].forEach((el,i)=>{const label=el.querySelector('.task label');label.textContent='作業内容 '+(i+1);});}
+function data(){return [...list.children].map((el,i)=>{const v=k=>el.querySelector('[data-k="'+k+'"]').value.trim();return{name:v('name')||'作業'+(i+1),minutes:v('minutes')===''?0:Number(v('minutes')),qty:v('qty')===''?0:Number(v('qty'))};});}
+function fmtMinutes(m){const rounded=Math.round(m);const h=Math.floor(rounded/60),min=rounded%60;if(h&&min)return h+'時間'+min+'分';if(h)return h+'時間';return min+'分';}
+function fmtHours(m){return (m/60).toLocaleString('ja-JP',{maximumFractionDigits:2})+'時間';}
+function calculate(){
+ const rows=data(),buffer=Number(document.getElementById('buffer').value),day=Number(document.getElementById('dayLength').value);
+ if(!Number.isFinite(buffer)||buffer<0||buffer>500||!Number.isFinite(day)||day<=0||day>24){return;}
+ const base=rows.reduce((s,r)=>s+(Number.isFinite(r.minutes)&&r.minutes>=0&&Number.isFinite(r.qty)&&r.qty>=0?r.minutes*r.qty:0),0);
+ const extra=base*buffer/100,total=base+extra,dayMinutes=day*60;
+ document.getElementById('base').textContent=fmtHours(base);
+ document.getElementById('bufferTime').textContent=fmtHours(extra);
+ document.getElementById('total').textContent=fmtHours(total);
+ document.getElementById('days').textContent=(total/dayMinutes).toLocaleString('ja-JP',{maximumFractionDigits:2})+'日';
+ document.getElementById('count').textContent=rows.length+'件';
+ document.getElementById('minutes').textContent=Math.round(total).toLocaleString('ja-JP')+'分';
+ document.getElementById('explain').textContent='予備時間 '+buffer+'% を加算し、1日 '+day+' 時間作業する想定で計算しています。休憩や待ち時間は含まれません。';
+}
+document.getElementById('buffer').addEventListener('input',calculate);document.getElementById('dayLength').addEventListener('input',calculate);
+document.getElementById('add').addEventListener('click',()=>addTask());
+document.getElementById('example').addEventListener('click',()=>{list.replaceChildren();serial=0;[
+{name:'資料を集める',minutes:20,qty:1},{name:'原稿を作成する',minutes:45,qty:3},{name:'内容を確認する',minutes:15,qty:3},{name:'修正する',minutes:30,qty:1}
+].forEach(addTask);});
+document.getElementById('reset').addEventListener('click',()=>{list.replaceChildren();serial=0;document.getElementById('buffer').value=15;document.getElementById('dayLength').value=6;addTask();});
+document.getElementById('download').addEventListener('click',()=>{
+ const rows=data(),csv=[['作業内容','1回あたりの時間（分）','回数','合計（分）'],...rows.map(r=>[r.name,r.minutes,r.qty,r.minutes*r.qty])];
+ const esc=v=>'"'+String(v).replace(/"/g,'""')+'"';const blob=new Blob(['\uFEFF'+csv.map(r=>r.map(esc).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8;'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='作業時間見積もり.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+});
+addTask();addTask();addTask();
+</script>
+</body>
+</html>
