@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="通信費やサブスクなどの月額料金を入力して、固定費と見直し後の節約額を計算できる無料ツールです。">
+<title>固定費見直し計算機</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#243044;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.65}
+main{width:min(100% - 28px,900px);margin:30px auto}h1{font-size:clamp(1.6rem,4vw,2.2rem);line-height:1.3;margin:0 0 10px}h2{font-size:1.15rem;margin:0 0 14px}p{color:#657287;margin:8px 0}
+.panel{background:#fff;border:1px solid #dce3ec;border-radius:15px;padding:clamp(16px,3vw,25px);margin:16px 0;box-shadow:0 5px 20px #24304408}
+.item{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(100px,1fr) minmax(100px,1fr) auto;gap:10px;align-items:end;border-bottom:1px solid #e7ebf1;padding:14px 0}
+label{display:block;font-weight:650;font-size:.9rem;margin-bottom:5px}input{width:100%;min-width:0;padding:10px 11px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}
+button{font:inherit;font-weight:650;border:0;border-radius:9px;padding:11px 15px;cursor:pointer;background:#315ea8;color:white}
+button.secondary{background:#e9eef6;color:#243044}button.remove{background:#fff0f0;color:#a22;padding:10px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stat{background:#f6f8fb;border:1px solid #e2e8f0;border-radius:11px;padding:15px;min-width:0}.stat span{display:block;color:#657287;font-size:.88rem}.stat strong{display:block;font-size:clamp(1.15rem,3vw,1.65rem);overflow-wrap:anywhere;margin-top:5px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid #e2e8f0}th{background:#f6f8fb}td.num,th.num{text-align:right;white-space:nowrap}.table-wrap{overflow-x:auto}table{min-width:480px}
+.note{font-size:.88rem}footer{text-align:center;color:#657287;font-size:.85rem;padding:10px 0 26px}
+@media(max-width:650px){main{margin:20px auto}.item{grid-template-columns:1fr 1fr}.item .name{grid-column:1/-1}.item .remove-wrap{grid-column:1/-1}.item button{width:100%}.summary{grid-template-columns:1fr}.actions button{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>固定費見直し計算機</h1>
+<p>スマホ料金、サブスク、保険、ネット回線などの月額料金を整理して、見直し後にいくら節約できるか計算します。入力内容はこの端末上で処理されます。</p>
+</header>
+<section class="panel">
+<h2>毎月の固定費を入力</h2>
+<p class="note">現在の月額と、見直し後に予定している月額を入力してください。解約する場合は見直し後を0円にします。</p>
+<div id="items"></div>
+<div class="actions">
+<button type="button" id="add">＋ 項目を追加</button>
+<button type="button" class="secondary" id="example">入力例を入れる</button>
+<button type="button" class="secondary" id="reset">すべてクリア</button>
+</div>
+</section>
+<section class="panel">
+<h2>節約シミュレーション</h2>
+<div class="summary">
+<div class="stat"><span>現在の月額合計</span><strong id="currentTotal">0円</strong></div>
+<div class="stat"><span>見直し後の月額合計</span><strong id="newTotal">0円</strong></div>
+<div class="stat"><span>毎月の節約額</span><strong id="monthlySaving">0円</strong></div>
+<div class="stat"><span>年間の節約額</span><strong id="yearlySaving">0円</strong></div>
+<div class="stat"><span>見直し後の年間支出</span><strong id="yearlyNew">0円</strong></div>
+<div class="stat"><span>月額の削減率</span><strong id="savingRate">0%</strong></div>
+</div>
+<div class="table-wrap" style="margin-top:18px">
+<table><thead><tr><th>項目</th><th class="num">現在（月額）</th><th class="num">見直し後</th><th class="num">月の差額</th></tr></thead><tbody id="results"></tbody></table>
+</div>
+<div class="actions"><button type="button" id="download">CSVをダウンロード</button></div>
+<p class="note">試算額は入力値をもとにした概算です。解約金、契約更新月、初期費用、サービス内容の違いなどは別途ご確認ください。</p>
+</section>
+<footer>固定費見直し計算機｜無料ツール</footer>
+</main>
+<script>
+const list=document.getElementById('items');let serial=0;
+function addItem(v={}){
+ if(list.children.length>=20){alert('項目は最大20件です。');return;}
+ const id=++serial,el=document.createElement('div');el.className='item';el.dataset.id=id;
+ el.innerHTML=`
+ <div class="field name"><label for="n${id}">項目名</label><input id="n${id}" data-k="name" maxlength="80" placeholder="例：スマホ料金"></div>
+ <div class="field"><label for="c${id}">現在の月額（円）</label><input id="c${id}" data-k="current" type="number" min="0" step="1" placeholder="例：6000"></div>
+ <div class="field"><label for="a${id}">見直し後（円）</label><input id="a${id}" data-k="after" type="number" min="0" step="1" placeholder="例：3000"></div>
+ <div class="remove-wrap"><button type="button" class="remove">削除</button></div>`;
+ el.querySelectorAll('input').forEach(input=>input.addEventListener('input',calculate));
+ el.querySelector('.remove').addEventListener('click',()=>{el.remove();if(!list.children.length)addItem();calculate();});
+ for(const k of ['name','current','after'])if(v[k]!==undefined)el.querySelector('[data-k="'+k+'"]').value=v[k];
+ list.appendChild(el);calculate();
+}
+function getData(){return [...list.children].map((el,i)=>{const val=k=>el.querySelector('[data-k="'+k+'"]').value.trim();return{name:val('name')||'項目'+(i+1),current:val('current')===''?0:Number(val('current')),after:val('after')===''?0:Number(val('after'))};});}
+function money(n){return Math.round(n).toLocaleString('ja-JP')+'円';}
+function calculate(){
+ const data=getData();
+ let current=0,after=0;
+ data.forEach(x=>{if(Number.isFinite(x.current)&&x.current>=0)current+=x.current;if(Number.isFinite(x.after)&&x.after>=0)after+=x.after;});
+ const saving=current-after;
+ document.getElementById('currentTotal').textContent=money(current);
+ document.getElementById('newTotal').textContent=money(after);
+ document.getElementById('monthlySaving').textContent=(saving<0?'支出増 '+money(-saving):money(saving));
+ document.getElementById('yearlySaving').textContent=(saving<0?'支出増 '+money(-saving*12):money(saving*12));
+ document.getElementById('yearlyNew').textContent=money(after*12);
+ document.getElementById('savingRate').textContent=(current>0?(saving/current*100).toFixed(1):'0.0')+'%';
+ const tbody=document.getElementById('results');tbody.replaceChildren();
+ data.forEach(x=>{const tr=document.createElement('tr');[x.name,money(x.current),money(x.after),(x.current-x.after<0?'+'+money(x.after-x.current):money(x.current-x.after))].forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;if(i>0)td.className='num';tr.appendChild(td);});tbody.appendChild(tr);});
+}
+document.getElementById('add').addEventListener('click',()=>addItem());
+document.getElementById('example').addEventListener('click',()=>{list.replaceChildren();serial=0;[
+{name:'スマホ料金',current:6000,after:3000},{name:'動画サブスク',current:1500,after:0},{name:'インターネット回線',current:5200,after:4500},{name:'音楽サブスク',current:1000,after:1000}
+].forEach(addItem);});
+document.getElementById('reset').addEventListener('click',()=>{list.replaceChildren();serial=0;addItem();});
+document.getElementById('download').addEventListener('click',()=>{
+ const data=getData(),csv=[['項目名','現在の月額（円）','見直し後の月額（円）','毎月の差額（円）'],...data.map(x=>[x.name,x.current,x.after,x.current-x.after])];
+ const escape=v=>'"'+String(v).replace(/"/g,'""')+'"';
+ const blob=new Blob(['\uFEFF'+csv.map(r=>r.map(escape).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8;'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='固定費見直し結果.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+});
+addItem();addItem();addItem();
+</script>
+</body>
+</html>
