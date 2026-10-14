@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <style>
+    :root{color-scheme:light;--ink:#202a36;--muted:#617083;--line:#dce3eb;--brand:#315f86;--bg:#f4f7fb}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.65}
+    main{max-width:850px;margin:auto;padding:24px 16px 60px}.hero,.panel,.profile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+    h1{font-size:1.65rem;margin:0 0 8px}h2{font-size:1.15rem;margin:0 0 12px}.muted{color:var(--muted);font-size:.92rem}.notice{background:#fff7e6;border:1px solid #f0d8a4;border-radius:10px;padding:12px;font-size:.9rem}
+    label{display:block;font-weight:650;margin:12px 0 5px}input,select,textarea{width:100%;font:inherit;border:1px solid #bdc8d5;border-radius:9px;padding:10px;background:#fff;color:var(--ink)}
+    textarea{min-height:90px;resize:vertical}.checks{display:flex;flex-wrap:wrap;gap:12px}.checks label{font-weight:400;margin:4px 0;display:flex;align-items:center;gap:6px}.checks input{width:auto}
+    button{font:inherit;border:0;border-radius:10px;padding:11px 16px;background:var(--brand);color:white;font-weight:700;cursor:pointer;margin-top:14px}button.secondary{background:#e8eef5;color:var(--ink)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.profile{margin:0;padding:16px}.profile h3{margin:0 0 4px}.tag{display:inline-block;background:#eaf1f8;color:#234f73;border-radius:20px;padding:3px 9px;font-size:.82rem;margin:3px 4px 3px 0}
+    .status{margin-top:12px;padding:12px;border-radius:10px;background:#edf7ef}.hidden{display:none}.foot{font-size:.82rem;color:var(--muted);margin-top:24px}
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <h1>つながりラウンジ（β版）</h1>
+    <p>恋人探し・友達づくりのための交流サービスを準備しています。</p>
+    <div class="notice"><strong>試験運用について</strong><br>登録プロフィールは運営者の確認後に公開されます。現在は試験段階で、マッチングや連絡先交換を保証するものではありません。個人を特定できる情報、連絡先、勤務先、住所、SNS ID、写真は入力しないでください。</div>
+  </section>
+
+  <section class="panel">
+    <h2>公開プロフィールを探す</h2>
+    <p class="muted">公開承認されたプロフィールのみ表示します。登録直後のプロフィールは審査中のため表示されません。</p>
+    <label for="filterGroup">参加区分</label>
+    <select id="filterGroup"><option value="">すべて</option><option>男性40歳以上</option><option>女性20〜29歳</option></select>
+    <label for="filterGoal">目的</label>
+    <select id="filterGoal"><option value="">すべて</option><option>恋人探し</option><option>友達づくり</option><option>どちらも</option></select>
+    <button type="button" onclick="loadProfiles()">プロフィールを検索</button>
+    <div id="profiles" class="grid" style="margin-top:16px"></div>
+    <p id="empty" class="muted">公開プロフィールを読み込んでいます…</p>
+  </section>
+
+  <section class="panel">
+    <h2>プロフィールを登録する</h2>
+    <p class="muted">登録は無料です。登録内容は運営者が確認し、公開するものを選びます。メールアドレスや電話番号は収集しません。</p>
+    <form id="regForm">
+      <label for="nickname">ニックネーム（20文字以内）</label>
+      <input id="nickname" maxlength="20" required placeholder="例：さくら">
+      <label for="group">参加区分</label>
+      <select id="group" required><option value="">選択してください</option><option>男性40歳以上</option><option>女性20〜29歳</option></select>
+      <label for="age">年代</label>
+      <select id="age" required><option value="">先に参加区分を選んでください</option></select>
+      <label>利用目的（複数選択可）</label>
+      <div class="checks">
+        <label><input type="checkbox" name="goals" value="恋人探し">恋人探し</label>
+        <label><input type="checkbox" name="goals" value="友達づくり">友達づくり</label>
+        <label><input type="checkbox" name="goals" value="どちらも">どちらも</label>
+      </div>
+      <label for="intro">自己紹介（180文字以内）</label>
+      <textarea id="intro" maxlength="180" required placeholder="趣味や、どんな交流を希望するかを書いてください。個人情報は書かないでください。"></textarea>
+      <label class="checks"><input type="checkbox" id="consent" required>利用上の注意を読み、個人情報を書かないことに同意します。</label>
+      <button id="submitBtn" type="submit">プロフィールを登録</button>
+    </form>
+    <div id="result" class="status hidden" role="status"></div>
+  </section>
+
+  <section class="panel">
+    <h2>自分のプロフィールを削除する</h2>
+    <p class="muted">登録完了時に表示された登録IDと削除キーを入力してください。削除キーは運営側には平文保存されません。キーをなくすと、この方法では削除できません。</p>
+    <label for="deleteId">登録ID</label><input id="deleteId">
+    <label for="deleteKey">削除キー</label><input id="deleteKey">
+    <button type="button" class="secondary" onclick="deleteProfile()">プロフィールを削除</button>
+  </section>
+  <p class="foot">このβ版は機能検証用です。公開前に運営者による年齢確認・安全対策・個人情報の取扱い・適用法令の確認が必要です。現在はメッセージ送信や連絡先交換機能はありません。</p>
+</main>
+<script>
+const ageSelect = document.getElementById('age');
+document.getElementById('group').addEventListener('change', () => {
+  const group = document.getElementById('group').value;
+  const ages = group === '男性40歳以上' ? ['40〜49歳','50〜59歳','60歳以上'] : group === '女性20〜29歳' ? ['20〜24歳','25〜29歳'] : [];
+  ageSelect.innerHTML = '<option value="">選択してください</option>' + ages.map(a => '<option>' + a + '</option>').join('');
+});
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function loadProfiles(){
+  document.getElementById('empty').textContent='読み込み中…';
+  google.script.run.withSuccessHandler(items=>{
+    const group=document.getElementById('filterGroup').value, goal=document.getElementById('filterGoal').value;
+    const found=items.filter(p=>(!group||p.group===group)&&(!goal||p.goals.split('・').includes(goal)||p.goals==='どちらも'&&goal!==''));
+    const root=document.getElementById('profiles');
+    root.innerHTML=found.map(p=>'<article class="profile"><h3>'+esc(p.nickname)+'</h3><span class="tag">'+esc(p.group)+'</span><span class="tag">'+esc(p.age)+'</span><p>'+esc(p.goals).split('・').map(x=>'<span class="tag">'+x+'</span>').join('')+'</p><p>'+esc(p.intro)+'</p></article>').join('');
+    document.getElementById('empty').textContent=found.length?'表示件数：'+found.length+'件':'現在、条件に合う公開プロフィールはありません。';
+  }).withFailureHandler(showError).getPublicProfiles();
+}
+document.getElementById('regForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='登録中…';
+  const data={nickname:document.getElementById('nickname').value,group:document.getElementById('group').value,age:document.getElementById('age').value,goals:[...document.querySelectorAll('input[name="goals"]:checked')].map(x=>x.value),intro:document.getElementById('intro').value,consent:document.getElementById('consent').checked};
+  google.script.run.withSuccessHandler(r=>{
+    const out=document.getElementById('result');out.classList.remove('hidden');
+    out.innerHTML='<strong>登録を受け付けました（審査中）</strong><br>登録ID：<code>'+esc(r.id)+'</code><br>削除キー：<code>'+esc(r.deleteKey)+'</code><br><br>この2つを必ず控えてください。プロフィールは運営者が公開承認するまで一覧に表示されません。';
+    document.getElementById('deleteId').value=r.id;document.getElementById('deleteKey').value=r.deleteKey;
+    document.getElementById('regForm').reset();ageSelect.innerHTML='<option value="">先に参加区分を選んでください</option>';
+    btn.disabled=false;btn.textContent='プロフィールを登録';
+  }).withFailureHandler(err=>{showError(err);btn.disabled=false;btn.textContent='プロフィールを登録';}).registerProfile(data);
+});
+function deleteProfile(){
+  const id=document.getElementById('deleteId').value.trim(), key=document.getElementById('deleteKey').value.trim();
+  if(!id||!key){alert('登録IDと削除キーを入力してください。');return;}
+  if(!confirm('このプロフィールを削除しますか？'))return;
+  google.script.run.withSuccessHandler(()=>{alert('プロフィールを削除しました。');document.getElementById('deleteId').value='';document.getElementById('deleteKey').value='';loadProfiles();}).withFailureHandler(showError).requestProfileDeletion(id,key);
+}
+function showError(err){alert('処理に失敗しました：'+(err&&err.message?err.message:err));}
+loadProfiles();
+</script>
+</body>
+</html>
